@@ -202,7 +202,6 @@ _DCFG = {
                              "temperature": 0.72,
                          }
                      }},
-    "nsfw_mode": False,
     "server":       {"host": "127.0.0.1", "port": 5000,
                      # remote_mode:
                      #   "local_trusted"             -- localhost trusts X-User-Id (profile selector UX)
@@ -1222,7 +1221,10 @@ async def _chat_sse(uid,user_text,cog):
                 gap_hours=gap_hours,
             )
         except Exception as e:
-            _log_exc("schedule_live_scene", e)  # never break the chat path
+            _log_exc("schedule_live_scene", e)
+            # v9.3: Emit warning to user via SSE if immersive generation fails repeatedly
+            # This keeps chat flowing but informs user of background issues
+            log.warning("Immersive scene generation failed: %s", e)
         # v9.1: lifetime triggers — pinned to total_msg_count so periodic
         # tasks fire on real corpus growth, NOT on session boundaries
         # (otherwise a clear-and-restart could re-trigger compression on
