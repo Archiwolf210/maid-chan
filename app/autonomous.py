@@ -49,6 +49,16 @@ def _log_exc(msg, exc):
     _le(msg, exc)
 
 
+def _log_warn(msg):
+    from main import _log_warn as _lw
+    if _lw:
+        _lw(msg)
+    else:
+        # Fallback если функция еще не определена
+        log = _log()
+        log.warning(msg)
+
+
 def _cfg() -> dict:
     from main import load_config
     return (load_config().get("autonomous") or {})
@@ -213,6 +223,45 @@ async def _proactive_loop() -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 #  DIARY: first-person end-of-day entry
 # ─────────────────────────────────────────────────────────────────────────────
+def parse_diary_entry(content: str) -> dict:
+    """
+    Парсит запись дневника с YAML фронтматтером.
+    Возвращает {'meta': {...}, 'text': '...'}
+    
+    Безопасная версия с обработкой ошибок (Fix C2).
+    """
+    if not content:
+        return {"meta": {}, "text": ""}
+    
+    if not content.startswith("---"):
+        return {"meta": {}, "text": content}
+    
+    try:
+        parts = content.split("---", 2)
+        if len(parts) < 3:
+            return {"meta": {}, "text": content}
+            
+        yaml_body = parts[1].strip()
+        text_body = parts[2].strip()
+        
+        if not yaml_body:
+            return {"meta": {}, "text": content}
+        
+        import yaml
+        meta = yaml.safe_load(yaml_body)
+        if not isinstance(meta, dict):
+            return {"meta": {}, "text": content}
+            
+        return {"meta": meta, "text": text_body}
+    except ImportError:
+        # yaml не установлен
+        return {"meta": {}, "text": content}
+    except Exception as e:
+        _log_warn(f"YAML parse error in diary: {e}. Fallback to raw text.")
+        # Возвращаем весь контент как текст, если YAML битый
+        return {"meta": {}, "text": content}
+
+
 def get_diary(uid: str, day: Optional[str] = None) -> dict:
     """Fetch the diary entry for `day` (YYYY-MM-DD). Defaults to today.
     Returns {} if no entry exists."""
@@ -240,13 +289,27 @@ def list_diary_days(uid: str, limit: int = 30) -> list[dict]:
         _log_exc("list_diary_days", e); return []
 
 
-def _save_diary(uid: str, day: str, entry: str) -> None:
+def _save_diary(uid: str, day: str, entry: str, metadata: dict = None) -> None:
+    """Save diary entry with optional YAML frontmatter (Kuni style)."""
     try:
+        # If metadata provided, wrap entry in YAML frontmatter
+        if metadata:
+            try:
+                import yaml
+                yaml_frontmatter = yaml.dump(metadata, default_flow_style=False, allow_unicode=True)
+                full_entry = f"---\n{yaml_frontmatter}---\n{entry}"
+            except Exception as yaml_err:
+                _log_exc("diary_yaml_frontmatter", yaml_err)
+                # Fallback: save without YAML if parsing fails
+                full_entry = entry
+        else:
+            full_entry = entry
+            
         with db() as c:
             c.execute(
                 "INSERT INTO diary_entries(user_id,day,entry) VALUES(?,?,?) "
                 "ON CONFLICT(user_id,day) DO UPDATE SET entry=excluded.entry, ts=unixepoch()",
-                (uid, day, entry[:1500]))
+                (uid, day, full_entry[:1500]))
     except Exception as e:
         _log_exc("_save_diary", e)
 
@@ -311,7 +374,19 @@ async def _write_diary(uid: str, day: str) -> Optional[str]:
         text = _clean(r.json()["choices"][0]["message"]["content"]).strip()
         if not text or len(text) < 40:
             return None
-        _save_diary(uid, day, text)
+        
+        # Build metadata for YAML frontmatter (Kuni style)
+        from main import get_user_state
+        state = get_user_state(uid) or {}
+        metadata = {
+            "timestamp": int(datetime.now().timestamp()),
+            "humanity_level": state.get("humanity_level", 0.0),
+            "software_version": state.get("software_version", "1.0"),
+            "tags": ["daily_reflection"],
+            "confidence": 0.85
+        }
+        
+        _save_diary(uid, day, text, metadata)
         log.info("Diary written uid=%s day=%s chars=%d", uid, day, len(text))
         return text
     except httpx.ReadTimeout:

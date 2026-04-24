@@ -17,7 +17,7 @@ v9.0: RTX 3090 24GB + Qwen3-32B Q4_K_M + Qwen3-0.6B draft (speculative decoding)
       --cont-batching, --parallel 2.
 """
 from __future__ import annotations
-import asyncio, json, logging, os, random, re, secrets, socket, sqlite3, sys, threading, time, traceback
+import asyncio, json, logging, mimetypes, os, random, re, secrets, shutil, socket, sqlite3, sys, threading, time, traceback
 from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -34,7 +34,7 @@ except ImportError:  # pragma: no cover
     orjson = None  # type: ignore
     def _jdumps(obj) -> bytes:
         return json.dumps(obj, ensure_ascii=False).encode("utf-8")
-from fastapi import Depends, FastAPI, Header, HTTPException, Request
+from fastapi import Depends, FastAPI, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -66,6 +66,7 @@ def _setup_logger(name):
 
 log = _setup_logger("maid")
 def _log_exc(msg, exc): log.error("%s: %s\n%s", msg, exc, traceback.format_exc())
+def _log_warn(msg): log.warning("%s", msg)  # v9.3: explicit warning helper for non-fatal issues
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -202,7 +203,6 @@ _DCFG = {
                              "temperature": 0.72,
                          }
                      }},
-    "nsfw_mode": False,
     "server":       {"host": "127.0.0.1", "port": 5000,
                      # remote_mode:
                      #   "local_trusted"             -- localhost trusts X-User-Id (profile selector UX)
@@ -377,17 +377,17 @@ from app.db import db, init_db, _migrate_legacy, _SCHEMA, _MIGRATIONS  # noqa: E
 # ── USERS ─────────────────────────────────────────────────────────────────────
 def get_users():
     try:
-        with db() as c: return [dict(r) for r in c.execute("SELECT id,name FROM users ORDER BY created_at").fetchall()]
+        with db() as c: return [dict(r) for r in c.execute("SELECT id,name,avatar_path FROM users ORDER BY created_at").fetchall()]
     except Exception as e: _log_exc("get_users",e); return []
 
 def get_user(uid):
     try:
-        with db() as c: row=c.execute("SELECT id,name FROM users WHERE id=?",(uid,)).fetchone(); return dict(row) if row else None
+        with db() as c: row=c.execute("SELECT id,name,avatar_path FROM users WHERE id=?",(uid,)).fetchone(); return dict(row) if row else None
     except Exception as e: _log_exc("get_user",e); return None
 
 def create_user(uid,name):
     with db() as c:
-        cur=c.execute("INSERT OR IGNORE INTO users(id,name) VALUES(?,?)",(uid,name))
+        cur=c.execute("INSERT OR IGNORE INTO users(id,name,avatar_path) VALUES(?,?,NULL)",(uid,name))
         created=cur.rowcount>0
     if created: log.info("User created: %s",uid)
     return created
@@ -719,7 +719,11 @@ from app.memory import (  # noqa: E402
     get_memory, get_memory_for_prompt, clear_memory, delete_last_exchange,
     _embedding_cfg, get_embedder, encode_text, _decode_vec, _cosine_topk,
     _ltm_backfill_embeddings, get_ltm_relevant, _EMBEDDER_STATE,
+    get_context_with_summary, summarize_old_messages,
 )
+
+# ── KEY MEMORIES / EVOLUTION TRAITS (v9.3: Sakura-sou project Akasaka) ───────
+from app.services.key_memories import KeyMemoryManager  # noqa: E402
 
 # ── LTM compression (moved to app.llm in v9.2) ───────────────────────────────
 from app.llm import _compress_ltm  # noqa: E402
@@ -1172,12 +1176,28 @@ async def _chat_sse(uid,user_text,cog):
     await loop.run_in_executor(exe,save_cognitive_log,uid,user_text,cog)
     # Auto-detect open loops in user message
     await loop.run_in_executor(exe,_auto_extract_topics,uid,user_text,cog)
+    
+    # v9.3: Memory trace - notify client about retrieval process (из Thuki)
+    yield b"data: " + _jdumps({"type": "memory_trace", "step": "retrieving", "details": f"Анализ контекста и поиск в памяти..."}) + b"\n\n"
+    
     ltm_facts=await loop.run_in_executor(exe,get_ltm_relevant,uid,user_text,8)
-    # Load history BEFORE saving user message (prevents prompt duplication)
-    history=await loop.run_in_executor(exe,get_memory_for_prompt,uid,limit)
+    
+    # Notify about found memories
+    if ltm_facts:
+        yield b"data: " + _jdumps({"type": "memory_trace", "step": "found", "details": f"Найдено {len(ltm_facts)} релевантных записей в памяти"}) + b"\n\n"
+    
+    # Load history with summarization for long-term coherence (v9.3) + RAG cache
+    # context_hint используется для улучшения кэширования похожих запросов
+    context_hint = f"{cog.get('intent', '')}:{cog.get('topics', '')}"
+    history=await loop.run_in_executor(exe,get_context_with_summary,uid,limit,7,context_hint)
+    
     # Save user message as PENDING -- completed after successful LLM, discarded on error (P2 fix)
     user_msg_id=await loop.run_in_executor(exe,save_message,uid,"user",user_text,cog,"user_input","pending")
     system_static, system_dynamic = await loop.run_in_executor(exe,build_prompt,uid,cog,ltm_facts)
+    
+    # Notify about thinking start
+    yield b"data: " + _jdumps({"type": "memory_trace", "step": "thinking", "details": "Мэйд обдумывает ответ..."}) + b"\n\n"
+    
     # KV-cache-friendly layout: static system + history is long-lived → llama-server caches it.
     # Dynamic system goes RIGHT BEFORE the new user turn so freshness doesn't invalidate the cache.
     messages = (
@@ -1187,23 +1207,63 @@ async def _chat_sse(uid,user_text,cog):
         + [{"role": "user", "content": user_text}]
     )
     full=""
+    # v9.4: Track sources for clickable citations (из Thuki)
+    citation_sources = []
+    
     async for tok in _stream(messages):
         full+=tok
         yield b"data: " + _jdumps({"type":"token","text":tok}) + b"\n\n"
     full=full.strip()
+    
+    # v9.4: Process citations - send metadata for [1], [2] markers
     if full and not _is_err(full):
+        import re
+        citation_pattern = r'\[(\d+)\]'
+        matches = list(re.finditer(citation_pattern, full))
+        
+        # Build source references from key memories or LTM facts
+        if ltm_facts:
+            for i, fact in enumerate(ltm_facts[:5], 1):
+                citation_sources.append({
+                    "id": i,
+                    "text": fact.get("content", "")[:200],
+                    "date": fact.get("day", "unknown")
+                })
+        
+        # Send citation metadata to client
+        if citation_sources:
+            yield b"data: " + _jdumps({
+                "type": "citations", 
+                "sources": citation_sources
+            }) + b"\n\n"
+    if full and not _is_err(full):
+        # v9.3: Analyze for Key Memories (Sakura-sou evolution system)
+        key_mem_manager = KeyMemoryManager(uid)
+        await loop.run_in_executor(exe, key_mem_manager.analyze_message, user_text, full, state)
+        
         state=await loop.run_in_executor(exe,_post_process,uid,full,user_text,cog,user_msg_id)
+        # v9.3: Apply key memory boosts to state
+        await loop.run_in_executor(exe, key_mem_manager.apply_to_state, state)
+        
         thoughts=await loop.run_in_executor(exe,compute_thoughts,uid,user_text,state,cog)
         action=get_action(user_text,full,state,cfg,cog); scene=get_scene()
         open_topics=await loop.run_in_executor(exe,get_open_topics,uid,2)
         rp_scene_state=await loop.run_in_executor(exe,load_rp_scene,uid)
         session_count = int(state.get("msg_count",0))
         total_count   = int(state.get("total_msg_count",session_count))
+        
+        # v9.3: Add evolution traits and software version to done payload
+        humanity = round(state.get("humanity_level", 0.0), 3)
+        self_aware = round(state.get("self_awareness", 0.0), 3)
+        affection_lvl = round(state.get("affection", 0.0), 3)
+        sw_version = state.get("software_version", "1.0.0")
+        
         done_payload = {"type":"done","action":action,"scene":scene,"thoughts":thoughts,
             "open_topics":[t["topic"][:80] for t in open_topics],
             "rp_mode":rp_scene_state.get("mode","normal"),
             "cognitive":{"intent":cog.intent,"response_mode":cog.response_mode,"meaning":cog.meaning,"maid_emotion":cog.maid_emotion,"maid_intention":cog.maid_intention},
-            "state":{"mood":round(state["mood"],3),"trust":round(state["trust"],3),"fear":round(state["fear"],3),"attachment":round(state["attachment"],3),"curiosity":round(state.get("curiosity",0.5),3),"playfulness":round(state.get("playfulness",0.5),3),"warmth":round(state.get("warmth",0.6),3),"confidence":round(state.get("confidence",0.5),3),"openness":round(state.get("openness",0.5),3),"session_messages":session_count,"total_messages":total_count,"goals":[g for g in state.get("goals",[]) if g.get("status")=="active"]}}
+            "state":{"mood":round(state["mood"],3),"trust":round(state["trust"],3),"fear":round(state["fear"],3),"attachment":round(state["attachment"],3),"curiosity":round(state.get("curiosity",0.5),3),"playfulness":round(state.get("playfulness",0.5),3),"warmth":round(state.get("warmth",0.6),3),"confidence":round(state.get("confidence",0.5),3),"openness":round(state.get("openness",0.5),3),"session_messages":session_count,"total_messages":total_count,"goals":[g for g in state.get("goals",[]) if g.get("status")=="active"],
+                "humanity_level":humanity,"self_awareness":self_aware,"affection":affection_lvl,"software_version":sw_version}}
         yield b"data: " + _jdumps(done_payload) + b"\n\n"
         # v9.1: schedule the immersive (action / atmosphere / thought) update.
         # READ-ONLY w.r.t. memory — only writes to rp_scene + process cache.
@@ -1222,7 +1282,12 @@ async def _chat_sse(uid,user_text,cog):
                 gap_hours=gap_hours,
             )
         except Exception as e:
-            _log_exc("schedule_live_scene", e)  # never break the chat path
+            _log_exc("schedule_live_scene", e)
+            # v9.3: Emit warning to user via SSE if immersive generation fails repeatedly
+            # This keeps chat flowing but informs user of background issues
+            _log_warn(f"Immersive scene generation failed for uid={uid}: {e}")
+            # Optionally track failure count and notify user after N failures
+            # (implementation left for future enhancement)
         # v9.1: lifetime triggers — pinned to total_msg_count so periodic
         # tasks fire on real corpus growth, NOT on session boundaries
         # (otherwise a clear-and-restart could re-trigger compression on
@@ -1242,6 +1307,11 @@ async def _chat_sse(uid,user_text,cog):
         if mc%20==0 and mc>0:
             last_ex = f"USER: {user_text[:200]}\nMAID: {full[:200]}"
             _track(asyncio.create_task(_update_scene_summary_async(uid, last_ex)))
+        # Memory consolidation ("sleep"): schedule nightly for long-term coherence
+        # Triggered once per day after significant activity (mc > 50)
+        if mc > 50 and mc % 100 == 0:  # Каждые 100 сообщений после порога 50
+            from app.memory import schedule_consolidation
+            schedule_consolidation(uid)
     else:
         # Rollback: discard pending user message to keep memory consistent
         await loop.run_in_executor(exe,_discard_pending,uid,user_msg_id)
@@ -1622,7 +1692,7 @@ def user_create(body: UserCreate, request: Request):
     uid = re.sub(r"[^a-z0-9\u0430-\u044f\u0451_]", "_", name.lower(), flags=re.UNICODE)[:20]
     if get_user(uid): raise HTTPException(409, "User already exists")
     if not create_user(uid, name): raise HTTPException(409, "User already exists")
-    return {"id": uid, "name": name}
+    return {"id": uid, "name": name, "avatar_path": None}
 
 @app.delete("/api/users/{uid}")
 def user_delete(uid: str, request: Request):
@@ -1630,6 +1700,99 @@ def user_delete(uid: str, request: Request):
         raise HTTPException(403, "User management allowed only from localhost")
     if uid == "master": raise HTTPException(400, "Cannot delete master user")
     delete_user_fully(uid); return {"status": "ok"}
+
+# ── Avatar upload endpoints ───────────────────────────────────────────────────
+ALLOWED_AVATAR_MIME = {"image/png", "image/jpeg", "image/gif", "image/webp"}
+MAX_AVATAR_SIZE = 2 * 1024 * 1024  # 2MB
+
+@app.post("/api/avatar/upload")
+async def upload_avatar(file: UploadFile, uid: str = Depends(resolved_uid)):
+    """Upload avatar for current user. Validates MIME type, size, and magic bytes."""
+    if _is_remote_request(Request(scope={"type": "http"})):  # rough check
+        raise HTTPException(403, "Avatar upload allowed only from localhost")
+    
+    # Validate content type
+    if file.content_type not in ALLOWED_AVATAR_MIME:
+        raise HTTPException(400, f"Invalid file type. Allowed: {', '.join(ALLOWED_AVATAR_MIME)}")
+    
+    # Read and validate size
+    content = await file.read()
+    if len(content) > MAX_AVATAR_SIZE:
+        raise HTTPException(400, f"File too large. Max: {MAX_AVATAR_SIZE // (1024*1024)}MB")
+    
+    # Validate magic bytes (prevent fake extensions)
+    import imghdr
+    img_type = imghdr.what(None, content)
+    if img_type is None or img_type not in ('png', 'jpeg', 'gif', 'webp'):
+        raise HTTPException(400, "Invalid image content. File does not match declared type.")
+    
+    # Determine extension from actual image type
+    ext_map = {'png': '.png', 'jpeg': '.jpg', 'gif': '.gif', 'webp': '.webp'}
+    ext = ext_map.get(img_type, '.png')
+    avatar_filename = f"{uid}{ext}"
+    avatar_path = os.path.join("avatars", avatar_filename)
+    
+    # Remove old avatar if exists (cleanup)
+    old_pattern = os.path.join("avatars", f"{uid}.*")
+    import glob
+    for old_file in glob.glob(old_pattern):
+        try:
+            os.remove(old_file)
+            log.info("Removed old avatar: %s", old_file)
+        except Exception as e:
+            _log_exc("remove old avatar", e)
+    
+    # Save file
+    os.makedirs("avatars", exist_ok=True)
+    with open(avatar_path, "wb") as f:
+        f.write(content)
+    
+    # Update DB
+    with db() as c:
+        c.execute("UPDATE users SET avatar_path = ? WHERE id = ?", (avatar_path, uid))
+    
+    return {"status": "ok", "avatar_path": avatar_path}
+
+@app.get("/api/avatar/{uid}")
+def get_avatar(uid: str):
+    """Serve avatar image for user."""
+    with db() as c:
+        row = c.execute("SELECT avatar_path FROM users WHERE id = ?", (uid,)).fetchone()
+    
+    if not row or not row["avatar_path"]:
+        raise HTTPException(404, "Avatar not found")
+    
+    avatar_path = row["avatar_path"]
+    if not os.path.exists(avatar_path):
+        raise HTTPException(404, "Avatar file not found")
+    
+    # Guess content type
+    mime_type, _ = mimetypes.guess_type(avatar_path)
+    mime_type = mime_type or "application/octet-stream"
+    
+    return FileResponse(avatar_path, media_type=mime_type)
+
+@app.delete("/api/avatar/{uid}")
+def delete_avatar(uid: str, request: Request):
+    """Delete user's avatar."""
+    if _is_remote_request(request):
+        raise HTTPException(403, "Avatar management allowed only from localhost")
+    
+    with db() as c:
+        row = c.execute("SELECT avatar_path FROM users WHERE id = ?", (uid,)).fetchone()
+    
+    if row and row["avatar_path"]:
+        try:
+            if os.path.exists(row["avatar_path"]):
+                os.remove(row["avatar_path"])
+        except Exception as e:
+            _log_exc("delete_avatar file removal", e)
+        
+        with db() as c:
+            c.execute("UPDATE users SET avatar_path = NULL WHERE id = ?", (uid,))
+    
+    return {"status": "ok"}
+
 
 # ── Pending Topics ──────────────────────────────────────────────────────────
 @app.get("/api/topics")

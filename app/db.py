@@ -47,10 +47,12 @@ def _db_path() -> str:
 # ── SCHEMA ───────────────────────────────────────────────────────────────────
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS memory(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT NOT NULL DEFAULT 'master',role TEXT NOT NULL,content TEXT NOT NULL,ts INTEGER NOT NULL DEFAULT(unixepoch()),importance REAL NOT NULL DEFAULT 0.5,emotion_tag TEXT NOT NULL DEFAULT 'neutral',emotion_valence REAL NOT NULL DEFAULT 0.0,intent_tag TEXT NOT NULL DEFAULT 'other',topics TEXT NOT NULL DEFAULT '[]',trigger TEXT NOT NULL DEFAULT '',
-    turn_status TEXT NOT NULL DEFAULT 'completed');
+    turn_status TEXT NOT NULL DEFAULT 'completed',is_summarized INTEGER DEFAULT 0);
 CREATE INDEX IF NOT EXISTS idx_mem ON memory(user_id,id DESC);
-CREATE TABLE IF NOT EXISTS user_state(user_id TEXT PRIMARY KEY,mood REAL NOT NULL DEFAULT 0.5,trust REAL NOT NULL DEFAULT 0.5,fear REAL NOT NULL DEFAULT 0.4,attachment REAL NOT NULL DEFAULT 0.3,msg_count INTEGER NOT NULL DEFAULT 0,total_msg_count INTEGER NOT NULL DEFAULT 0,last_activity_ts INTEGER NOT NULL DEFAULT 0,curiosity REAL NOT NULL DEFAULT 0.5,playfulness REAL NOT NULL DEFAULT 0.5,warmth REAL NOT NULL DEFAULT 0.6,confidence REAL NOT NULL DEFAULT 0.5,openness REAL NOT NULL DEFAULT 0.5,goals TEXT NOT NULL DEFAULT '[]',updated_at INTEGER NOT NULL DEFAULT(unixepoch()));
-CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY,name TEXT NOT NULL,created_at INTEGER NOT NULL DEFAULT(unixepoch()));
+CREATE TABLE IF NOT EXISTS user_state(user_id TEXT PRIMARY KEY,mood REAL NOT NULL DEFAULT 0.5,trust REAL NOT NULL DEFAULT 0.5,fear REAL NOT NULL DEFAULT 0.4,attachment REAL NOT NULL DEFAULT 0.3,msg_count INTEGER NOT NULL DEFAULT 0,total_msg_count INTEGER NOT NULL DEFAULT 0,last_activity_ts INTEGER NOT NULL DEFAULT 0,curiosity REAL NOT NULL DEFAULT 0.5,playfulness REAL NOT NULL DEFAULT 0.5,warmth REAL NOT NULL DEFAULT 0.6,confidence REAL NOT NULL DEFAULT 0.5,openness REAL NOT NULL DEFAULT 0.5,goals TEXT NOT NULL DEFAULT '[]',updated_at INTEGER NOT NULL DEFAULT(unixepoch()),
+    humanity_level REAL NOT NULL DEFAULT 0.0,self_awareness REAL NOT NULL DEFAULT 0.0,emotional_stability REAL NOT NULL DEFAULT 0.0,defensiveness REAL NOT NULL DEFAULT 0.0,affection REAL NOT NULL DEFAULT 0.0,optimism REAL NOT NULL DEFAULT 0.0,communication REAL NOT NULL DEFAULT 0.0,patience REAL NOT NULL DEFAULT 0.0,wisdom REAL NOT NULL DEFAULT 0.0,software_version TEXT NOT NULL DEFAULT '1.0.0');
+CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY,name TEXT NOT NULL,avatar_path TEXT DEFAULT NULL,created_at INTEGER NOT NULL DEFAULT(unixepoch()),
+    humanity_level REAL NOT NULL DEFAULT 0.0,self_awareness REAL NOT NULL DEFAULT 0.0,emotional_stability REAL NOT NULL DEFAULT 0.0,defensiveness REAL NOT NULL DEFAULT 0.0,affection REAL NOT NULL DEFAULT 0.0,optimism REAL NOT NULL DEFAULT 0.0,communication REAL NOT NULL DEFAULT 0.0,patience REAL NOT NULL DEFAULT 0.0,wisdom REAL NOT NULL DEFAULT 0.0,software_version TEXT NOT NULL DEFAULT '1.0.0');
 CREATE TABLE IF NOT EXISTS long_term_memory(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT NOT NULL,fact TEXT NOT NULL,category TEXT NOT NULL DEFAULT 'general',importance REAL NOT NULL DEFAULT 0.7,emotion_tag TEXT NOT NULL DEFAULT 'neutral',access_count INTEGER NOT NULL DEFAULT 0,last_accessed INTEGER,ts INTEGER NOT NULL DEFAULT(unixepoch()));
 CREATE INDEX IF NOT EXISTS idx_ltm ON long_term_memory(user_id,importance DESC);
 CREATE TABLE IF NOT EXISTS memory_links(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT NOT NULL,from_id INTEGER NOT NULL,to_id INTEGER NOT NULL,link_type TEXT NOT NULL DEFAULT 'topic',strength REAL NOT NULL DEFAULT 0.5);
@@ -72,6 +74,11 @@ CREATE TABLE IF NOT EXISTS daily_summaries(id INTEGER PRIMARY KEY AUTOINCREMENT,
 CREATE INDEX IF NOT EXISTS idx_ds ON daily_summaries(user_id,day);
 CREATE TABLE IF NOT EXISTS diary_entries(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT NOT NULL,day TEXT NOT NULL,entry TEXT NOT NULL,ts INTEGER NOT NULL DEFAULT(unixepoch()),UNIQUE(user_id,day));
 CREATE INDEX IF NOT EXISTS idx_diary ON diary_entries(user_id,day);
+CREATE TABLE IF NOT EXISTS message_summaries(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT NOT NULL,summary_date INTEGER NOT NULL,summary_content TEXT NOT NULL,is_consolidated INTEGER DEFAULT 0,created_at INTEGER NOT NULL DEFAULT(unixepoch()),UNIQUE(user_id,summary_date));
+CREATE INDEX IF NOT EXISTS idx_ms ON message_summaries(user_id,summary_date DESC);
+CREATE INDEX IF NOT EXISTS idx_ms_consolidated ON message_summaries(user_id,is_consolidated) WHERE is_consolidated IS NOT NULL;
+CREATE TABLE IF NOT EXISTS key_memories(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT NOT NULL,memory_json TEXT NOT NULL,created_at INTEGER NOT NULL DEFAULT(unixepoch()));
+CREATE INDEX IF NOT EXISTS idx_km ON key_memories(user_id,created_at DESC);
 """
 
 
@@ -91,7 +98,10 @@ _MIGRATIONS = {
                   # reflection, trait evolution milestones. `last_activity_ts`
                   # is the last message epoch; used to detect session gaps.
                   ("total_msg_count","INTEGER NOT NULL DEFAULT 0"),
-                  ("last_activity_ts","INTEGER NOT NULL DEFAULT 0")],
+                  ("last_activity_ts","INTEGER NOT NULL DEFAULT 0"),
+                  # v9.5: Evolution traits for Maid personality
+                  ("humanity_level","REAL NOT NULL DEFAULT 0.0"),
+                  ("software_version","TEXT NOT NULL DEFAULT '1.0.0'")],
     "long_term_memory":[("category","TEXT NOT NULL DEFAULT 'general'"),("importance","REAL NOT NULL DEFAULT 0.7"),
                         ("emotion_tag","TEXT NOT NULL DEFAULT 'neutral'"),("access_count","INTEGER NOT NULL DEFAULT 0"),
                         ("last_accessed","INTEGER"),
@@ -102,6 +112,9 @@ _MIGRATIONS = {
                       ("expires_at","INTEGER NOT NULL DEFAULT(unixepoch()+259200)")],
     "rp_scene":[("location","TEXT NOT NULL DEFAULT ''"),("atmosphere","TEXT NOT NULL DEFAULT ''"),
                 ("last_updated","INTEGER NOT NULL DEFAULT(unixepoch())")],
+    "users": [("avatar_path", "TEXT DEFAULT NULL")],
+    # v9.5: Add is_consolidated column to message_summaries if table exists
+    "message_summaries": [("is_consolidated", "INTEGER DEFAULT 0")],
 }
 
 
