@@ -2080,14 +2080,14 @@ function startHintRotation(el) {
   // Show first hint immediately
   el.textContent = _pickNextHint();
   requestAnimationFrame(() => el.classList.add('show'));
-  // Cycle every 3.2s with 450ms fade
+  // Cycle every 2.0s with 450ms fade
   _hintTimer = setInterval(() => {
     el.classList.remove('show');
     setTimeout(() => {
       el.textContent = _pickNextHint();
       el.classList.add('show');
     }, 460);
-  }, 3200);
+  }, 2000);
 }
 
 function stopHintRotation() {

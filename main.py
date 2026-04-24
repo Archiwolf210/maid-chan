@@ -17,7 +17,7 @@ v9.0: RTX 3090 24GB + Qwen3-32B Q4_K_M + Qwen3-0.6B draft (speculative decoding)
       --cont-batching, --parallel 2.
 """
 from __future__ import annotations
-import asyncio, json, logging, os, random, re, secrets, socket, sqlite3, sys, threading, time, traceback
+import asyncio, json, logging, mimetypes, os, random, re, secrets, shutil, socket, sqlite3, sys, threading, time, traceback
 from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -34,7 +34,7 @@ except ImportError:  # pragma: no cover
     orjson = None  # type: ignore
     def _jdumps(obj) -> bytes:
         return json.dumps(obj, ensure_ascii=False).encode("utf-8")
-from fastapi import Depends, FastAPI, Header, HTTPException, Request
+from fastapi import Depends, FastAPI, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -377,17 +377,17 @@ from app.db import db, init_db, _migrate_legacy, _SCHEMA, _MIGRATIONS  # noqa: E
 # ── USERS ─────────────────────────────────────────────────────────────────────
 def get_users():
     try:
-        with db() as c: return [dict(r) for r in c.execute("SELECT id,name FROM users ORDER BY created_at").fetchall()]
+        with db() as c: return [dict(r) for r in c.execute("SELECT id,name,avatar_path FROM users ORDER BY created_at").fetchall()]
     except Exception as e: _log_exc("get_users",e); return []
 
 def get_user(uid):
     try:
-        with db() as c: row=c.execute("SELECT id,name FROM users WHERE id=?",(uid,)).fetchone(); return dict(row) if row else None
+        with db() as c: row=c.execute("SELECT id,name,avatar_path FROM users WHERE id=?",(uid,)).fetchone(); return dict(row) if row else None
     except Exception as e: _log_exc("get_user",e); return None
 
 def create_user(uid,name):
     with db() as c:
-        cur=c.execute("INSERT OR IGNORE INTO users(id,name) VALUES(?,?)",(uid,name))
+        cur=c.execute("INSERT OR IGNORE INTO users(id,name,avatar_path) VALUES(?,?,NULL)",(uid,name))
         created=cur.rowcount>0
     if created: log.info("User created: %s",uid)
     return created
@@ -1622,7 +1622,7 @@ def user_create(body: UserCreate, request: Request):
     uid = re.sub(r"[^a-z0-9\u0430-\u044f\u0451_]", "_", name.lower(), flags=re.UNICODE)[:20]
     if get_user(uid): raise HTTPException(409, "User already exists")
     if not create_user(uid, name): raise HTTPException(409, "User already exists")
-    return {"id": uid, "name": name}
+    return {"id": uid, "name": name, "avatar_path": None}
 
 @app.delete("/api/users/{uid}")
 def user_delete(uid: str, request: Request):
@@ -1630,6 +1630,82 @@ def user_delete(uid: str, request: Request):
         raise HTTPException(403, "User management allowed only from localhost")
     if uid == "master": raise HTTPException(400, "Cannot delete master user")
     delete_user_fully(uid); return {"status": "ok"}
+
+# ── Avatar upload endpoints ───────────────────────────────────────────────────
+ALLOWED_AVATAR_MIME = {"image/png", "image/jpeg", "image/gif", "image/webp"}
+MAX_AVATAR_SIZE = 2 * 1024 * 1024  # 2MB
+
+@app.post("/api/avatar/upload")
+async def upload_avatar(file: UploadFile, uid: str = Depends(resolved_uid)):
+    """Upload avatar for current user. Validates MIME type and size."""
+    if _is_remote_request(Request(scope={"type": "http"})):  # rough check
+        raise HTTPException(403, "Avatar upload allowed only from localhost")
+    
+    # Validate content type
+    if file.content_type not in ALLOWED_AVATAR_MIME:
+        raise HTTPException(400, f"Invalid file type. Allowed: {', '.join(ALLOWED_AVATAR_MIME)}")
+    
+    # Read and validate size
+    content = await file.read()
+    if len(content) > MAX_AVATAR_SIZE:
+        raise HTTPException(400, f"File too large. Max: {MAX_AVATAR_SIZE // (1024*1024)}MB")
+    
+    # Determine extension
+    ext = mimetypes.guess_extension(file.content_type) or ".png"
+    avatar_filename = f"{uid}{ext}"
+    avatar_path = os.path.join("avatars", avatar_filename)
+    
+    # Save file
+    os.makedirs("avatars", exist_ok=True)
+    with open(avatar_path, "wb") as f:
+        f.write(content)
+    
+    # Update DB
+    with db() as c:
+        c.execute("UPDATE users SET avatar_path = ? WHERE id = ?", (avatar_path, uid))
+    
+    return {"status": "ok", "avatar_path": avatar_path}
+
+@app.get("/api/avatar/{uid}")
+def get_avatar(uid: str):
+    """Serve avatar image for user."""
+    with db() as c:
+        row = c.execute("SELECT avatar_path FROM users WHERE id = ?", (uid,)).fetchone()
+    
+    if not row or not row["avatar_path"]:
+        raise HTTPException(404, "Avatar not found")
+    
+    avatar_path = row["avatar_path"]
+    if not os.path.exists(avatar_path):
+        raise HTTPException(404, "Avatar file not found")
+    
+    # Guess content type
+    mime_type, _ = mimetypes.guess_type(avatar_path)
+    mime_type = mime_type or "application/octet-stream"
+    
+    return FileResponse(avatar_path, media_type=mime_type)
+
+@app.delete("/api/avatar/{uid}")
+def delete_avatar(uid: str, request: Request):
+    """Delete user's avatar."""
+    if _is_remote_request(request):
+        raise HTTPException(403, "Avatar management allowed only from localhost")
+    
+    with db() as c:
+        row = c.execute("SELECT avatar_path FROM users WHERE id = ?", (uid,)).fetchone()
+    
+    if row and row["avatar_path"]:
+        try:
+            if os.path.exists(row["avatar_path"]):
+                os.remove(row["avatar_path"])
+        except Exception as e:
+            _log_exc("delete_avatar file removal", e)
+        
+        with db() as c:
+            c.execute("UPDATE users SET avatar_path = NULL WHERE id = ?", (uid,))
+    
+    return {"status": "ok"}
+
 
 # ── Pending Topics ──────────────────────────────────────────────────────────
 @app.get("/api/topics")

@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS memory(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id T
     turn_status TEXT NOT NULL DEFAULT 'completed');
 CREATE INDEX IF NOT EXISTS idx_mem ON memory(user_id,id DESC);
 CREATE TABLE IF NOT EXISTS user_state(user_id TEXT PRIMARY KEY,mood REAL NOT NULL DEFAULT 0.5,trust REAL NOT NULL DEFAULT 0.5,fear REAL NOT NULL DEFAULT 0.4,attachment REAL NOT NULL DEFAULT 0.3,msg_count INTEGER NOT NULL DEFAULT 0,total_msg_count INTEGER NOT NULL DEFAULT 0,last_activity_ts INTEGER NOT NULL DEFAULT 0,curiosity REAL NOT NULL DEFAULT 0.5,playfulness REAL NOT NULL DEFAULT 0.5,warmth REAL NOT NULL DEFAULT 0.6,confidence REAL NOT NULL DEFAULT 0.5,openness REAL NOT NULL DEFAULT 0.5,goals TEXT NOT NULL DEFAULT '[]',updated_at INTEGER NOT NULL DEFAULT(unixepoch()));
-CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY,name TEXT NOT NULL,created_at INTEGER NOT NULL DEFAULT(unixepoch()));
+CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY,name TEXT NOT NULL,avatar_path TEXT DEFAULT NULL,created_at INTEGER NOT NULL DEFAULT(unixepoch()));
 CREATE TABLE IF NOT EXISTS long_term_memory(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT NOT NULL,fact TEXT NOT NULL,category TEXT NOT NULL DEFAULT 'general',importance REAL NOT NULL DEFAULT 0.7,emotion_tag TEXT NOT NULL DEFAULT 'neutral',access_count INTEGER NOT NULL DEFAULT 0,last_accessed INTEGER,ts INTEGER NOT NULL DEFAULT(unixepoch()));
 CREATE INDEX IF NOT EXISTS idx_ltm ON long_term_memory(user_id,importance DESC);
 CREATE TABLE IF NOT EXISTS memory_links(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT NOT NULL,from_id INTEGER NOT NULL,to_id INTEGER NOT NULL,link_type TEXT NOT NULL DEFAULT 'topic',strength REAL NOT NULL DEFAULT 0.5);
@@ -102,6 +102,7 @@ _MIGRATIONS = {
                       ("expires_at","INTEGER NOT NULL DEFAULT(unixepoch()+259200)")],
     "rp_scene":[("location","TEXT NOT NULL DEFAULT ''"),("atmosphere","TEXT NOT NULL DEFAULT ''"),
                 ("last_updated","INTEGER NOT NULL DEFAULT(unixepoch())")],
+    "users": [("avatar_path", "TEXT DEFAULT NULL")],
 }
 
 
