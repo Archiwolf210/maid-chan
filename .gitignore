@@ -1,32 +1,67 @@
-```
 # Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
 .Python
-env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
 venv/
+ENV/
+env.bak/
 .venv/
-.ENV
-.python-version
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-.git/modules/
-*.sconsign.dblite
-.sconsign
-.wafpickle-N
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
 *.swp
 *.swo
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Coverage
+.coverage
+coverage/
+htmlcov/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# PyTest
+.pytest_cache/
+
+# Temp files
+*.tmp
 *~
 .DS_Store
 Thumbs.db
-```
+
+# Build outputs
+target/
+.gradle/
+node_modules/

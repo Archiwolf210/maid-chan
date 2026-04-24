@@ -475,3 +475,178 @@ def _detect_rp_mode_change(user_text: str, current_mode: str, cfg: dict) -> str:
     if any(s in tl for s in rp_enter):
         return "rp"
     return current_mode
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  CONTEXT SUMMARIZATION (Long-term Coherence)
+# ─────────────────────────────────────────────────────────────────────────────
+def summarize_old_messages(uid: str, days_old: int = 7, max_summaries: int = 5) -> str:
+    """
+    Генерирует суммаризацию старых сообщений (старше days_old дней).
+    Вместо хранения каждого слова годовой давности, храним краткое саммари.
+    
+    Args:
+        uid: ID пользователя
+        days_old: Минимальный возраст сообщений для суммаризации
+        max_summaries: Максимальное количество саммари для включения в контекст
+        
+    Returns:
+        Текст саммари для включения в промпт LLM
+    """
+    from datetime import datetime, timedelta
+    from app.llm import generate_text
+    
+    cutoff_date = datetime.now() - timedelta(days=days_old)
+    cutoff_ts = cutoff_date.timestamp()
+    
+    try:
+        with db() as c:
+            # Получаем старые сообщения, которые еще не суммаризированы
+            rows = c.execute("""
+                SELECT id, role, content, timestamp 
+                FROM messages 
+                WHERE user_id = ? AND timestamp < ? AND is_summarized = 0
+                ORDER BY timestamp ASC
+                LIMIT 100
+            """, (uid, cutoff_ts)).fetchall()
+            
+            if not rows:
+                # Возвращаем уже существующие саммари
+                summaries = c.execute("""
+                    SELECT summary_content, summary_date
+                    FROM message_summaries
+                    WHERE user_id = ?
+                    ORDER BY summary_date DESC
+                    LIMIT ?
+                """, (uid, max_summaries)).fetchall()
+                
+                if not summaries:
+                    return ""
+                
+                result_parts = ["=== ИСТОРИЯ ВЗАИМОДЕЙСТВИЙ (краткое содержание) ==="]
+                for summ_content, summ_date in summaries:
+                    date_str = datetime.fromtimestamp(summ_date).strftime('%Y-%m-%d')
+                    result_parts.append(f"[{date_str}] {summ_content}")
+                
+                return "\n".join(result_parts)
+            
+            # Группируем сообщения по дням для суммаризации
+            messages_by_day = {}
+            for row in rows:
+                day_key = datetime.fromtimestamp(row['timestamp']).date()
+                if day_key not in messages_by_day:
+                    messages_by_day[day_key] = []
+                messages_by_day[day_key].append({
+                    'role': row['role'],
+                    'content': row['content']
+                })
+            
+            # Генерируем саммари для каждой группы
+            new_summaries = []
+            for day, messages in messages_by_day.items():
+                # Формируем компактный текст для LLM
+                day_text = f"Дата: {day}\nДиалог:\n"
+                for msg in messages[:20]:  # Ограничиваем количество сообщений за день
+                    role_ru = "Пользователь" if msg['role'] == 'user' else "Мэйд"
+                    day_text += f"{role_ru}: {msg['content'][:150]}\n"
+                
+                # Запрос к LLM для генерации саммари
+                summary_prompt = f"""
+Кратко суммаризируй следующие сообщения диалога за один день (2-3 предложения):
+- Какие важные события произошли?
+- Какие темы обсуждались?
+- Были ли значимые эмоциональные моменты?
+
+{day_text}
+
+Саммари (только факты, без эмоций):
+"""
+                try:
+                    summary_text = generate_text(summary_prompt, max_tokens=150, temperature=0.3)
+                    summary_text = summary_text.strip()[:400]  # Ограничение длины
+                    
+                    new_summaries.append({
+                        'date': day.isoformat(),
+                        'timestamp': datetime.combine(day, datetime.min.time()).timestamp(),
+                        'content': summary_text
+                    })
+                except Exception as e:
+                    _log_exc(f"Failed to summarize day {day}", e)
+                    continue
+            
+            # Сохраняем саммари в БД
+            if new_summaries:
+                with db() as c:
+                    for summ in new_summaries:
+                        c.execute("""
+                            INSERT INTO message_summaries(user_id, summary_date, summary_content, created_at)
+                            VALUES(?, ?, ?, unixepoch())
+                            ON CONFLICT(user_id, summary_date) DO UPDATE SET
+                            summary_content=excluded.summary_content,
+                            created_at=excluded.created_at
+                        """, (uid, summ['timestamp'], summ['content']))
+                    
+                    # Помечаем сообщения как суммаризированные
+                    msg_ids = [r['id'] for r in rows]
+                    if msg_ids:
+                        placeholders = ','.join('?' * len(msg_ids))
+                        c.execute(f"""
+                            UPDATE messages SET is_summarized = 1
+                            WHERE id IN ({placeholders})
+                        """, msg_ids)
+            
+            # Возвращаем все саммари (новые + старые)
+            all_summaries = c.execute("""
+                SELECT summary_content, summary_date
+                FROM message_summaries
+                WHERE user_id = ?
+                ORDER BY summary_date DESC
+                LIMIT ?
+            """, (uid, max_summaries)).fetchall()
+            
+            if not all_summaries:
+                return ""
+            
+            result_parts = ["=== ИСТОРИЯ ВЗАИМОДЕЙСТВИЙ (краткое содержание) ==="]
+            for summ_content, summ_date in all_summaries:
+                date_str = datetime.fromtimestamp(summ_date).strftime('%Y-%m-%d')
+                result_parts.append(f"[{date_str}] {summ_content}")
+            
+            return "\n".join(result_parts)
+            
+    except Exception as e:
+        _log_exc("summarize_old_messages", e)
+        return ""
+
+
+def get_context_with_summary(uid: str, recent_limit: int = 20, days_for_summary: int = 7) -> str:
+    """
+    Комбинирует недавние сообщения (полные) со старыми (суммаризированными).
+    Оптимизирует использование контекстного окна LLM.
+    
+    Args:
+        uid: ID пользователя
+        recent_limit: Количество последних сообщений для включения полностью
+        days_for_summary: Сообщения старше скольких дней суммаризировать
+        
+    Returns:
+        Полный контекст для промпта
+    """
+    parts = []
+    
+    # 1. Добавляем суммаризированную историю
+    summary = summarize_old_messages(uid, days_old=days_for_summary)
+    if summary:
+        parts.append(summary)
+        parts.append("")  # Пустая строка для разделения
+    
+    # 2. Добавляем недавние сообщения полностью
+    recent = get_memory(uid, limit=recent_limit)
+    if recent:
+        parts.append("=== ПОСЛЕДНИЕ СООБЩЕНИЯ (полностью) ===")
+        for msg in recent:
+            timestamp = datetime.fromtimestamp(msg['timestamp']).strftime('%H:%M')
+            role = "Вы" if msg['role'] == 'user' else "Мэйд"
+            parts.append(f"[{timestamp}] {role}: {msg['content']}")
+    
+    return "\n".join(parts)
