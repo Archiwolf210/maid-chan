@@ -351,6 +351,27 @@ body{
 .typing-dots span:nth-child(3){animation-delay:.3s}
 @keyframes typing-bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
 
+/* v9.3: Memory trace display (из Thuki) */
+.memory-trace {
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(232, 164, 184, 0.08);
+  border-radius: 8px;
+  font-size: 0.78em;
+  color: var(--ink-mid);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.memory-trace .trace-icon {
+  font-size: 1.1em;
+}
+.memory-trace .trace-text {
+  font-style: italic;
+}
+
 /* ── INPUT BAR ───────────────── */
 .input-bar{
   padding:14px 20px;
@@ -1781,6 +1802,43 @@ function removeTyping() {
   if (el) el.remove();
 }
 
+// v9.3: Memory trace display (из Thuki) - shows thinking process
+let traceTimeout = null;
+function showMemoryTrace(step, details) {
+  const typingWrap = document.getElementById('typing-wrap');
+  if (!typingWrap) return;
+  
+  // Find or create trace element
+  let traceEl = typingWrap.querySelector('.memory-trace');
+  if (!traceEl) {
+    traceEl = document.createElement('div');
+    traceEl.className = 'memory-trace';
+    const typingBubble = typingWrap.querySelector('.typing-bubble');
+    if (typingBubble) {
+      typingBubble.appendChild(traceEl);
+    }
+  }
+  
+  // Update content with animation
+  const icons = {
+    'retrieving': '🔍',
+    'found': '💡',
+    'thinking': '💭'
+  };
+  const icon = icons[step] || '⚙️';
+  traceEl.innerHTML = `<span class="trace-icon">${icon}</span><span class="trace-text">${details}</span>`;
+  traceEl.style.opacity = '1';
+  
+  // Auto-hide after delay
+  if (traceTimeout) clearTimeout(traceTimeout);
+  traceTimeout = setTimeout(() => {
+    if (traceEl) {
+      traceEl.style.opacity = '0';
+      setTimeout(() => { if (traceEl) traceEl.remove(); }, 300);
+    }
+  }, 2500);
+}
+
 function scrollToBottom() {
   const msgs = document.getElementById('messages');
   msgs.scrollTop = msgs.scrollHeight;
@@ -1862,6 +1920,9 @@ async function sendMessage() {
             if (tn && tn.nodeType === 3) tn.nodeValue = fullText;
             else maidBubble.textContent = fullText;
             scrollToBottom();
+          } else if (evt.type === 'memory_trace') {
+            // v9.3: Display thinking process trace (из Thuki)
+            showMemoryTrace(evt.step, evt.details);
           } else if (evt.type === 'error') {
             toast('LLM: ' + (evt.message || 'ошибка соединения'), 'err');
           } else if (evt.type === 'done') {

@@ -1176,12 +1176,28 @@ async def _chat_sse(uid,user_text,cog):
     await loop.run_in_executor(exe,save_cognitive_log,uid,user_text,cog)
     # Auto-detect open loops in user message
     await loop.run_in_executor(exe,_auto_extract_topics,uid,user_text,cog)
+    
+    # v9.3: Memory trace - notify client about retrieval process (из Thuki)
+    yield b"data: " + _jdumps({"type": "memory_trace", "step": "retrieving", "details": f"Анализ контекста и поиск в памяти..."}) + b"\n\n"
+    
     ltm_facts=await loop.run_in_executor(exe,get_ltm_relevant,uid,user_text,8)
-    # Load history with summarization for long-term coherence (v9.3)
-    history=await loop.run_in_executor(exe,get_context_with_summary,uid,limit,7)
+    
+    # Notify about found memories
+    if ltm_facts:
+        yield b"data: " + _jdumps({"type": "memory_trace", "step": "found", "details": f"Найдено {len(ltm_facts)} релевантных записей в памяти"}) + b"\n\n"
+    
+    # Load history with summarization for long-term coherence (v9.3) + RAG cache
+    # context_hint используется для улучшения кэширования похожих запросов
+    context_hint = f"{cog.get('intent', '')}:{cog.get('topics', '')}"
+    history=await loop.run_in_executor(exe,get_context_with_summary,uid,limit,7,context_hint)
+    
     # Save user message as PENDING -- completed after successful LLM, discarded on error (P2 fix)
     user_msg_id=await loop.run_in_executor(exe,save_message,uid,"user",user_text,cog,"user_input","pending")
     system_static, system_dynamic = await loop.run_in_executor(exe,build_prompt,uid,cog,ltm_facts)
+    
+    # Notify about thinking start
+    yield b"data: " + _jdumps({"type": "memory_trace", "step": "thinking", "details": "Мэйд обдумывает ответ..."}) + b"\n\n"
+    
     # KV-cache-friendly layout: static system + history is long-lived → llama-server caches it.
     # Dynamic system goes RIGHT BEFORE the new user turn so freshness doesn't invalidate the cache.
     messages = (
@@ -1266,6 +1282,11 @@ async def _chat_sse(uid,user_text,cog):
         if mc%20==0 and mc>0:
             last_ex = f"USER: {user_text[:200]}\nMAID: {full[:200]}"
             _track(asyncio.create_task(_update_scene_summary_async(uid, last_ex)))
+        # Memory consolidation ("sleep"): schedule nightly for long-term coherence
+        # Triggered once per day after significant activity (mc > 50)
+        if mc > 50 and mc % 100 == 0:  # Каждые 100 сообщений после порога 50
+            from app.memory import schedule_consolidation
+            schedule_consolidation(uid)
     else:
         # Rollback: discard pending user message to keep memory consistent
         await loop.run_in_executor(exe,_discard_pending,uid,user_msg_id)

@@ -26,7 +26,8 @@ avoids circular import at module load.
 from __future__ import annotations
 import re
 import threading
-from typing import Optional
+import time
+from typing import Optional, List, Dict, Any
 
 import httpx
 
@@ -41,6 +42,62 @@ def _log():
 def _log_exc(msg, exc):
     from main import _log_exc as _le
     _le(msg, exc)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  RAG CACHE WITH TTL (из Kuni)
+# ─────────────────────────────────────────────────────────────────────────────
+_RAG_CACHE: Dict[str, tuple] = {}  # key -> (timestamp, result)
+_RAG_CACHE_TTL = 4 * 3600  # 4 часа
+_RAG_CACHE_LOCK = threading.Lock()
+
+
+def _get_rag_cache_key(uid: str, context_hint: str = "") -> str:
+    """Генерация ключа кэша на основе uid и временного окна."""
+    # Кэшируем на 5-минутные окна внутри TTL
+    time_window = int(time.time()) // 300
+    return f"{uid}:{time_window}:{hash(context_hint) % 1000}"
+
+
+def _rag_cache_get(key: str) -> Optional[str]:
+    """Получение из кэша с проверкой TTL."""
+    with _RAG_CACHE_LOCK:
+        if key in _RAG_CACHE:
+            cached_time, result = _RAG_CACHE[key]
+            if time.time() - cached_time < _RAG_CACHE_TTL:
+                return result
+            else:
+                del _RAG_CACHE[key]
+    return None
+
+
+def _rag_cache_set(key: str, value: str):
+    """Запись в кэш."""
+    with _RAG_CACHE_LOCK:
+        _RAG_CACHE[key] = (time.time(), value)
+        # Очистка старых записей (раз в 100 запросов)
+        if len(_RAG_CACHE) > 1000:
+            _rag_cache_cleanup()
+
+
+def _rag_cache_cleanup():
+    """Очистка протухших записей."""
+    now = time.time()
+    with _RAG_CACHE_LOCK:
+        expired = [k for k, (t, _) in _RAG_CACHE.items() if now - t > _RAG_CACHE_TTL]
+        for k in expired:
+            del _RAG_CACHE[k]
+
+
+def clear_rag_cache(uid: Optional[str] = None):
+    """Очистка кэша (полная или для конкретного пользователя)."""
+    with _RAG_CACHE_LOCK:
+        if uid:
+            keys_to_delete = [k for k in _RAG_CACHE if k.startswith(f"{uid}:")]
+            for k in keys_to_delete:
+                del _RAG_CACHE[k]
+        else:
+            _RAG_CACHE.clear()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -619,19 +676,27 @@ def summarize_old_messages(uid: str, days_old: int = 7, max_summaries: int = 5) 
         return ""
 
 
-def get_context_with_summary(uid: str, recent_limit: int = 20, days_for_summary: int = 7) -> str:
+def get_context_with_summary(uid: str, recent_limit: int = 20, days_for_summary: int = 7, context_hint: str = "") -> str:
     """
     Комбинирует недавние сообщения (полные) со старыми (суммаризированными).
     Оптимизирует использование контекстного окна LLM.
+    Использует кэширование с TTL для снижения нагрузки на GPU.
     
     Args:
         uid: ID пользователя
         recent_limit: Количество последних сообщений для включения полностью
         days_for_summary: Сообщения старше скольких дней суммаризировать
+        context_hint: Подсказка для ключа кэша (например, тема разговора)
         
     Returns:
         Полный контекст для промпта
     """
+    # Проверка кэша
+    cache_key = _get_rag_cache_key(uid, context_hint)
+    cached_result = _rag_cache_get(cache_key)
+    if cached_result is not None:
+        return cached_result
+    
     parts = []
     
     # 1. Добавляем суммаризированную историю
@@ -649,4 +714,153 @@ def get_context_with_summary(uid: str, recent_limit: int = 20, days_for_summary:
             role = "Вы" if msg['role'] == 'user' else "Мэйд"
             parts.append(f"[{timestamp}] {role}: {msg['content']}")
     
-    return "\n".join(parts)
+    result = "\n".join(parts)
+    
+    # Сохранение в кэш
+    _rag_cache_set(cache_key, result)
+    
+    return result
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  MEMORY CONSOLIDATION ("СОН") - из Kuni
+# ─────────────────────────────────────────────────────────────────────────────
+async def consolidate_memories(uid: str, max_time_sec: int = 3600) -> int:
+    """
+    Ночная консолидация памяти: сжимает старые записи, объединяет дубликаты,
+    улучшает когерентность долгосрочной памяти.
+    
+    Аналог человеческого сна: важное остаётся, детали сливаются в обобщения.
+    
+    Args:
+        uid: ID пользователя
+        max_time_sec: Максимальное время выполнения (защита от зависания)
+        
+    Returns:
+        Количество обработанных записей
+    """
+    from app.llm import generate_text
+    from datetime import datetime, timedelta
+    
+    start_time = time.time()
+    processed_count = 0
+    
+    try:
+        _log(f"[CONSOLIDATE] Starting memory consolidation for {uid}")
+        
+        # 1. Загружаем все саммари за последние 30 дней
+        with db() as c:
+            thirty_days_ago = (datetime.now() - timedelta(days=30)).timestamp()
+            summaries = c.execute("""
+                SELECT id, summary_content, summary_date
+                FROM message_summaries
+                WHERE user_id = ? AND summary_date >= ?
+                ORDER BY summary_date DESC
+                LIMIT 50
+            """, (uid, thirty_days_ago)).fetchall()
+        
+        if len(summaries) < 3:
+            _log(f"[CONSOLIDATE] Not enough summaries to consolidate ({len(summaries)})")
+            return 0
+        
+        # 2. Группируем по темам (простая эвристика: первые 5 слов как ключ)
+        topic_groups: Dict[str, List[dict]] = {}
+        for summ in summaries:
+            key_words = ' '.join(summ['summary_content'].split()[:5]).lower()
+            if key_words not in topic_groups:
+                topic_groups[key_words] = []
+            topic_groups[key_words].append({
+                'id': summ['id'],
+                'content': summ['summary_content'],
+                'date': summ['summary_date']
+            })
+        
+        # 3. Для каждой группы: создаём единое резюме
+        consolidated_entries = []
+        for topic, entries in topic_groups.items():
+            if time.time() - start_time > max_time_sec:
+                _log(f"[CONSOLIDATE] Time limit reached ({max_time_sec}s)")
+                break
+            
+            if len(entries) == 1:
+                continue  # Нечего консолидировать
+            
+            # Промпт для LLM
+            contents = "\n".join([f"- [{datetime.fromtimestamp(e['date']).strftime('%Y-%m-%d')}] {e['content']}" for e in entries])
+            consolidation_prompt = f"""
+Ты — система консолидации памяти цифровой служанки Мэйд.
+Объедини следующие записи в одно связное резюме, сохранив важные детали, но убрав повторы:
+
+{contents}
+
+Ответь одним абзацем (максимум 150 слов) на русском языке.
+"""
+            
+            try:
+                consolidated_text = generate_text(consolidation_prompt, max_tokens=200, temperature=0.3)
+                consolidated_text = consolidated_text.strip()[:400]
+                
+                # Средняя дата из группы
+                avg_date = sum(e['date'] for e in entries) / len(entries)
+                
+                consolidated_entries.append({
+                    'topic': topic,
+                    'content': consolidated_text,
+                    'date': avg_date,
+                    'source_ids': [e['id'] for e in entries]
+                })
+                processed_count += len(entries)
+                
+            except Exception as e:
+                _log_exc(f"[CONSOLIDATE] Failed to consolidate topic '{topic}'", e)
+                continue
+        
+        # 4. Сохраняем консолидированные записи
+        if consolidated_entries:
+            with db() as c:
+                for entry in consolidated_entries:
+                    c.execute("""
+                        INSERT INTO message_summaries(user_id, summary_date, summary_content, created_at)
+                        VALUES(?, ?, ?, unixepoch())
+                    """, (uid, entry['date'], entry['content']))
+                    
+                    # Удаляем старые записи, которые были объединены
+                    # (опционально, можно оставить для истории)
+                    # placeholders = ','.join('?' * len(entry['source_ids']))
+                    # c.execute(f"DELETE FROM message_summaries WHERE id IN ({placeholders})", entry['source_ids'])
+        
+        _log(f"[CONSOLIDATE] Completed: processed {processed_count} entries, created {len(consolidated_entries)} consolidated")
+        return processed_count
+        
+    except Exception as e:
+        _log_exc("[CONSOLIDATE] Critical error", e)
+        return 0
+
+
+def schedule_consolidation(uid: str):
+    """
+    Планирует консолидацию памяти на ночное время (2-4 часа ночи).
+    Вызывается из autonomous.py или по расписанию.
+    """
+    import asyncio
+    from datetime import datetime, time as dt_time
+    
+    async def run_at_night():
+        now = datetime.now()
+        # Целевое время: 3:00 ночи
+        target = now.replace(hour=3, minute=0, second=0, microsecond=0)
+        if now.hour >= 3:
+            # Если уже прошло 3 часа, планируем на завтра
+            target = target.replace(day=target.day + 1)
+        
+        delay = (target - now).total_seconds()
+        _log(f"[CONSOLIDATE] Scheduled for {target.strftime('%H:%M')} (delay: {delay:.0f}s)")
+        
+        await asyncio.sleep(delay)
+        await consolidate_memories(uid, max_time_sec=1800)  # 30 минут макс
+    
+    # Запускаем в фоне
+    from main import get_event_loop
+    loop = get_event_loop()
+    if loop:
+        loop.create_task(run_at_night())
