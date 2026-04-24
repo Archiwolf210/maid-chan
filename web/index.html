@@ -296,12 +296,16 @@ body{
 .bubble-wrap.user{flex-direction:row-reverse}
 
 .bubble-avatar{
-  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
   background:var(--s3);display:flex;align-items:center;justify-content:center;
-  font-size:12px;
+  font-size:14px;overflow:hidden;position:relative;
 }
 .bubble-wrap.maid .bubble-avatar{
   background:linear-gradient(135deg,var(--sakura2),var(--gold2));
+}
+.bubble-avatar-img{
+  width:100%;height:100%;object-fit:cover;border-radius:50%;
+  display:block;
 }
 
 .bubble{
@@ -1330,6 +1334,17 @@ async function selectUser(uid, name) {
     _proactiveVisible = false;
     startProactivePolling();
   } catch(e) {}
+  // Refresh avatar display for the new user
+  refreshAvatarDisplay();
+}
+
+// Refresh avatar images after user switch
+function refreshAvatarDisplay() {
+  // Force reload of all avatar images by re-selecting them
+  document.querySelectorAll('.bubble-avatar-img').forEach(img => {
+    const src = img.src.split('?')[0];
+    img.src = src + '?t=' + Date.now();
+  });
 }
 
 function showUserModal() {
@@ -1625,7 +1640,28 @@ function appendBubble(role, text, withMeta=true, intentTag='') {
 
   const avatar = document.createElement('div');
   avatar.className = 'bubble-avatar';
-  avatar.textContent = role==='user' ? (currentName?currentName[0].toUpperCase():'У') : '🌸';
+  // Display custom avatar image if available, otherwise fallback to emoji/letter
+  const avatarImg = document.createElement('img');
+  avatarImg.className = 'bubble-avatar-img';
+  avatarImg.alt = '';
+  if (role === 'user' && currentUid) {
+    avatarImg.src = '/api/avatar/' + currentUid + '?t=' + Date.now();
+    avatarImg.onerror = function() { 
+      this.style.display = 'none'; 
+      avatar.textContent = currentName ? currentName[0].toUpperCase() : 'У'; 
+    };
+    avatar.appendChild(avatarImg);
+    if (!currentName) avatar.style.display = 'none'; // hide if no name
+  } else if (role === 'maid') {
+    avatarImg.src = '/api/avatar/maid?t=' + Date.now();
+    avatarImg.onerror = function() { 
+      this.style.display = 'none'; 
+      avatar.textContent = '🌸'; 
+    };
+    avatar.appendChild(avatarImg);
+  } else {
+    avatar.textContent = currentName ? currentName[0].toUpperCase() : 'У';
+  }
 
   const bubble = document.createElement('div');
   bubble.className = `bubble ${role==='user'?'user':'maid'}`;
@@ -1657,7 +1693,17 @@ function appendTyping() {
   wrap.id = 'typing-wrap';
   wrap.className = 'typing-wrap';
   const avatar = document.createElement('div');
-  avatar.className = 'bubble-avatar'; avatar.textContent = '🌸';
+  avatar.className = 'bubble-avatar';
+  // Display custom avatar image for maid if available, otherwise fallback to emoji
+  const avatarImg = document.createElement('img');
+  avatarImg.className = 'bubble-avatar-img';
+  avatarImg.alt = '';
+  avatarImg.src = '/api/avatar/maid?t=' + Date.now();
+  avatarImg.onerror = function() { 
+    this.style.display = 'none'; 
+    avatar.textContent = '🌸'; 
+  };
+  avatar.appendChild(avatarImg);
   const bubble = document.createElement('div');
   bubble.className = 'typing-bubble with-hint';
   // v9.1: rotating Maid-chan style ambient hints under the dots

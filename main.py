@@ -1642,7 +1642,7 @@ MAX_AVATAR_SIZE = 2 * 1024 * 1024  # 2MB
 
 @app.post("/api/avatar/upload")
 async def upload_avatar(file: UploadFile, uid: str = Depends(resolved_uid)):
-    """Upload avatar for current user. Validates MIME type and size."""
+    """Upload avatar for current user. Validates MIME type, size, and magic bytes."""
     if _is_remote_request(Request(scope={"type": "http"})):  # rough check
         raise HTTPException(403, "Avatar upload allowed only from localhost")
     
@@ -1655,10 +1655,27 @@ async def upload_avatar(file: UploadFile, uid: str = Depends(resolved_uid)):
     if len(content) > MAX_AVATAR_SIZE:
         raise HTTPException(400, f"File too large. Max: {MAX_AVATAR_SIZE // (1024*1024)}MB")
     
-    # Determine extension
-    ext = mimetypes.guess_extension(file.content_type) or ".png"
+    # Validate magic bytes (prevent fake extensions)
+    import imghdr
+    img_type = imghdr.what(None, content)
+    if img_type is None or img_type not in ('png', 'jpeg', 'gif', 'webp'):
+        raise HTTPException(400, "Invalid image content. File does not match declared type.")
+    
+    # Determine extension from actual image type
+    ext_map = {'png': '.png', 'jpeg': '.jpg', 'gif': '.gif', 'webp': '.webp'}
+    ext = ext_map.get(img_type, '.png')
     avatar_filename = f"{uid}{ext}"
     avatar_path = os.path.join("avatars", avatar_filename)
+    
+    # Remove old avatar if exists (cleanup)
+    old_pattern = os.path.join("avatars", f"{uid}.*")
+    import glob
+    for old_file in glob.glob(old_pattern):
+        try:
+            os.remove(old_file)
+            log.info("Removed old avatar: %s", old_file)
+        except Exception as e:
+            _log_exc("remove old avatar", e)
     
     # Save file
     os.makedirs("avatars", exist_ok=True)
