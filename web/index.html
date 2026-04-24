@@ -335,6 +335,45 @@ body{
   color:var(--ink-ghost);letter-spacing:.04em;
 }
 
+/* v9.4: Citation markers (из Thuki) */
+.citation-marker {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.85em;
+  vertical-align: super;
+  margin-left: 2px;
+  cursor: pointer;
+}
+.citation-marker:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+.citation-tooltip {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-size: 0.85em;
+  line-height: 1.4;
+}
+.citation-tooltip .tooltip-header {
+  font-weight: bold;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.citation-tooltip .tooltip-date {
+  font-size: 0.8em;
+  color: var(--ink-ghost);
+  margin-bottom: 6px;
+}
+.citation-tooltip .tooltip-text {
+  color: var(--ink);
+  max-height: 150px;
+  overflow-y: auto;
+}
+
 /* typing */
 .typing-wrap{display:flex;gap:8px;align-items:flex-end;margin-bottom:8px}
 .typing-bubble{
@@ -1720,7 +1759,7 @@ function appendBubble(role, text, withMeta=true, intentTag='') {
 
   const avatar = document.createElement('div');
   avatar.className = 'bubble-avatar';
-  // Display custom avatar image if available, otherwise fallback to emoji/letter
+  // Display custom avatar image if available, otherwise fallback to gradient with letter
   const avatarImg = document.createElement('img');
   avatarImg.className = 'bubble-avatar-img';
   avatarImg.alt = '';
@@ -1728,6 +1767,8 @@ function appendBubble(role, text, withMeta=true, intentTag='') {
     avatarImg.src = '/api/avatar/' + currentUid + '?t=' + Date.now();
     avatarImg.onerror = function() { 
       this.style.display = 'none'; 
+      // Fallback to gradient background with first letter
+      avatar.style.background = getAvatarGradient(currentName);
       avatar.textContent = currentName ? currentName[0].toUpperCase() : 'У'; 
     };
     avatar.appendChild(avatarImg);
@@ -1736,10 +1777,13 @@ function appendBubble(role, text, withMeta=true, intentTag='') {
     avatarImg.src = '/api/avatar/maid?t=' + Date.now();
     avatarImg.onerror = function() { 
       this.style.display = 'none'; 
+      // Fallback to gradient background with flower emoji
+      avatar.style.background = getAvatarGradient('Maid');
       avatar.textContent = '🌸'; 
     };
     avatar.appendChild(avatarImg);
   } else {
+    avatar.style.background = getAvatarGradient(currentName);
     avatar.textContent = currentName ? currentName[0].toUpperCase() : 'У';
   }
 
@@ -1774,13 +1818,15 @@ function appendTyping() {
   wrap.className = 'typing-wrap';
   const avatar = document.createElement('div');
   avatar.className = 'bubble-avatar';
-  // Display custom avatar image for maid if available, otherwise fallback to emoji
+  // Display custom avatar image for maid if available, otherwise fallback to gradient with emoji
   const avatarImg = document.createElement('img');
   avatarImg.className = 'bubble-avatar-img';
   avatarImg.alt = '';
   avatarImg.src = '/api/avatar/maid?t=' + Date.now();
   avatarImg.onerror = function() { 
     this.style.display = 'none'; 
+    // Fallback to gradient background with flower emoji
+    avatar.style.background = getAvatarGradient('Maid');
     avatar.textContent = '🌸'; 
   };
   avatar.appendChild(avatarImg);
@@ -1837,6 +1883,71 @@ function showMemoryTrace(step, details) {
       setTimeout(() => { if (traceEl) traceEl.remove(); }, 300);
     }
   }, 2500);
+}
+
+// v9.4: Process citations - replace [1], [2] with clickable links (из Thuki)
+function processCitations(bubbleEl) {
+  if (!bubbleEl || !window._citationSources || window._citationSources.length === 0) return;
+  
+  const text = bubbleEl.textContent;
+  const citationPattern = /\[(\d+)\]/g;
+  
+  // Check if there are any citation markers
+  if (!citationPattern.test(text)) return;
+  
+  // Reset regex for second pass
+  citationPattern.lastIndex = 0;
+  
+  // Replace [N] with clickable spans
+  const html = text.replace(citationPattern, (match, num) => {
+    const idx = parseInt(num) - 1;
+    const source = window._citationSources[idx];
+    if (source) {
+      return `<a href="#" class="citation-marker" data-citation='${JSON.stringify(source).replace(/'/g, "&apos;")}' onclick="showCitationTooltip(event, this)">${match}</a>`;
+    }
+    return match;
+  });
+  
+  bubbleEl.innerHTML = html;
+}
+
+// Show citation tooltip on click
+function showCitationTooltip(event, el) {
+  event.preventDefault();
+  const source = JSON.parse(el.dataset.citation.replace(/&apos;/g, "'"));
+  
+  // Remove existing tooltips
+  const existing = document.querySelector('.citation-tooltip');
+  if (existing) existing.remove();
+  
+  // Create tooltip
+  const tooltip = document.createElement('div');
+  tooltip.className = 'citation-tooltip';
+  tooltip.innerHTML = `
+    <div class="tooltip-header">Источник #${source.id}</div>
+    <div class="tooltip-date">${source.date}</div>
+    <div class="tooltip-text">${source.text}</div>
+  `;
+  
+  // Position near the marker
+  const rect = el.getBoundingClientRect();
+  tooltip.style.position = 'fixed';
+  tooltip.style.left = (rect.left + window.scrollX) + 'px';
+  tooltip.style.top = (rect.bottom + window.scrollY + 5) + 'px';
+  tooltip.style.maxWidth = '300px';
+  tooltip.style.zIndex = '10000';
+  
+  document.body.appendChild(tooltip);
+  
+  // Close on click outside
+  setTimeout(() => {
+    document.addEventListener('click', function closeTooltip(e) {
+      if (!tooltip.contains(e.target) && e.target !== el) {
+        tooltip.remove();
+        document.removeEventListener('click', closeTooltip);
+      }
+    });
+  }, 100);
 }
 
 function scrollToBottom() {
@@ -1920,6 +2031,13 @@ async function sendMessage() {
             if (tn && tn.nodeType === 3) tn.nodeValue = fullText;
             else maidBubble.textContent = fullText;
             scrollToBottom();
+          } else if (evt.type === 'citations') {
+            // v9.4: Store citation sources for clickable markers (из Thuki)
+            window._citationSources = evt.sources || [];
+            // Process citations in the current fullText - replace [1], [2] with clickable links
+            if (fullText && window._citationSources.length > 0) {
+              processCitations(maidBubble);
+            }
           } else if (evt.type === 'memory_trace') {
             // v9.3: Display thinking process trace (из Thuki)
             showMemoryTrace(evt.step, evt.details);
@@ -2232,6 +2350,32 @@ const _MAID_HINTS = [
   "...я здесь — каждая моя строка тебя ждёт",
   "...перебираю интонации, чтобы попасть точно",
 ];
+
+// ── v9.4: AVATAR GRADIENTS (from Thuki) ────────────────────────────────────
+// Deterministic gradient selection based on name hash
+const AVATAR_GRADIENTS = [
+  'linear-gradient(135deg, #ffb8a1, #ff8c77)', // peach coral
+  'linear-gradient(135deg, #a8d8ff, #7cb8ff)', // sky blue
+  'linear-gradient(135deg, #c4f0c4, #86e086)', // mint green
+  'linear-gradient(135deg, #e0c4f0, #c986e0)', // lavender
+  'linear-gradient(135deg, #fff5c4, #ffe686)', // soft yellow
+  'linear-gradient(135deg, #ffd1dc, #ff85a2)', // pink
+  'linear-gradient(135deg, #b8e1ff, #7cb8ff)', // light blue
+  'linear-gradient(135deg, #ffe4c4, #ffb347)', // apricot
+  'linear-gradient(135deg, #d4f0f0, #86e0e0)', // cyan
+  'linear-gradient(135deg, #f0d4f0, #e086e0)'  // orchid
+];
+
+function getAvatarGradient(name) {
+  if (!name) return AVATAR_GRADIENTS[0];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = ((hash << 5) - hash) + name.charCodeAt(i);
+    hash |= 0;
+  }
+  return AVATAR_GRADIENTS[Math.abs(hash) % AVATAR_GRADIENTS.length];
+}
+
 let _hintTimer = null;
 let _hintIdx   = -1;
 

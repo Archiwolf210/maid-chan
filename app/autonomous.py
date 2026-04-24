@@ -240,13 +240,22 @@ def list_diary_days(uid: str, limit: int = 30) -> list[dict]:
         _log_exc("list_diary_days", e); return []
 
 
-def _save_diary(uid: str, day: str, entry: str) -> None:
+def _save_diary(uid: str, day: str, entry: str, metadata: dict = None) -> None:
+    """Save diary entry with optional YAML frontmatter (Kuni style)."""
     try:
+        # If metadata provided, wrap entry in YAML frontmatter
+        if metadata:
+            import yaml
+            yaml_frontmatter = yaml.dump(metadata, default_flow_style=False, allow_unicode=True)
+            full_entry = f"---\n{yaml_frontmatter}---\n{entry}"
+        else:
+            full_entry = entry
+            
         with db() as c:
             c.execute(
                 "INSERT INTO diary_entries(user_id,day,entry) VALUES(?,?,?) "
                 "ON CONFLICT(user_id,day) DO UPDATE SET entry=excluded.entry, ts=unixepoch()",
-                (uid, day, entry[:1500]))
+                (uid, day, full_entry[:1500]))
     except Exception as e:
         _log_exc("_save_diary", e)
 
@@ -311,7 +320,19 @@ async def _write_diary(uid: str, day: str) -> Optional[str]:
         text = _clean(r.json()["choices"][0]["message"]["content"]).strip()
         if not text or len(text) < 40:
             return None
-        _save_diary(uid, day, text)
+        
+        # Build metadata for YAML frontmatter (Kuni style)
+        from main import get_user_state
+        state = get_user_state(uid) or {}
+        metadata = {
+            "timestamp": int(datetime.now().timestamp()),
+            "humanity_level": state.get("humanity_level", 0.0),
+            "software_version": state.get("software_version", "1.0"),
+            "tags": ["daily_reflection"],
+            "confidence": 0.85
+        }
+        
+        _save_diary(uid, day, text, metadata)
         log.info("Diary written uid=%s day=%s chars=%d", uid, day, len(text))
         return text
     except httpx.ReadTimeout:

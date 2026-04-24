@@ -1207,10 +1207,35 @@ async def _chat_sse(uid,user_text,cog):
         + [{"role": "user", "content": user_text}]
     )
     full=""
+    # v9.4: Track sources for clickable citations (из Thuki)
+    citation_sources = []
+    
     async for tok in _stream(messages):
         full+=tok
         yield b"data: " + _jdumps({"type":"token","text":tok}) + b"\n\n"
     full=full.strip()
+    
+    # v9.4: Process citations - send metadata for [1], [2] markers
+    if full and not _is_err(full):
+        import re
+        citation_pattern = r'\[(\d+)\]'
+        matches = list(re.finditer(citation_pattern, full))
+        
+        # Build source references from key memories or LTM facts
+        if ltm_facts:
+            for i, fact in enumerate(ltm_facts[:5], 1):
+                citation_sources.append({
+                    "id": i,
+                    "text": fact.get("content", "")[:200],
+                    "date": fact.get("day", "unknown")
+                })
+        
+        # Send citation metadata to client
+        if citation_sources:
+            yield b"data: " + _jdumps({
+                "type": "citations", 
+                "sources": citation_sources
+            }) + b"\n\n"
     if full and not _is_err(full):
         # v9.3: Analyze for Key Memories (Sakura-sou evolution system)
         key_mem_manager = KeyMemoryManager(uid)
