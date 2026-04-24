@@ -66,6 +66,7 @@ def _setup_logger(name):
 
 log = _setup_logger("maid")
 def _log_exc(msg, exc): log.error("%s: %s\n%s", msg, exc, traceback.format_exc())
+def _log_warn(msg): log.warning("%s", msg)  # v9.3: explicit warning helper for non-fatal issues
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1224,7 +1225,9 @@ async def _chat_sse(uid,user_text,cog):
             _log_exc("schedule_live_scene", e)
             # v9.3: Emit warning to user via SSE if immersive generation fails repeatedly
             # This keeps chat flowing but informs user of background issues
-            log.warning("Immersive scene generation failed: %s", e)
+            _log_warn(f"Immersive scene generation failed for uid={uid}: {e}")
+            # Optionally track failure count and notify user after N failures
+            # (implementation left for future enhancement)
         # v9.1: lifetime triggers — pinned to total_msg_count so periodic
         # tasks fire on real corpus growth, NOT on session boundaries
         # (otherwise a clear-and-restart could re-trigger compression on
