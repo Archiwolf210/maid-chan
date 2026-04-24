@@ -49,6 +49,16 @@ def _log_exc(msg, exc):
     _le(msg, exc)
 
 
+def _log_warn(msg):
+    from main import _log_warn as _lw
+    if _lw:
+        _lw(msg)
+    else:
+        # Fallback если функция еще не определена
+        log = _log()
+        log.warning(msg)
+
+
 def _cfg() -> dict:
     from main import load_config
     return (load_config().get("autonomous") or {})
@@ -213,6 +223,45 @@ async def _proactive_loop() -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 #  DIARY: first-person end-of-day entry
 # ─────────────────────────────────────────────────────────────────────────────
+def parse_diary_entry(content: str) -> dict:
+    """
+    Парсит запись дневника с YAML фронтматтером.
+    Возвращает {'meta': {...}, 'text': '...'}
+    
+    Безопасная версия с обработкой ошибок (Fix C2).
+    """
+    if not content:
+        return {"meta": {}, "text": ""}
+    
+    if not content.startswith("---"):
+        return {"meta": {}, "text": content}
+    
+    try:
+        parts = content.split("---", 2)
+        if len(parts) < 3:
+            return {"meta": {}, "text": content}
+            
+        yaml_body = parts[1].strip()
+        text_body = parts[2].strip()
+        
+        if not yaml_body:
+            return {"meta": {}, "text": content}
+        
+        import yaml
+        meta = yaml.safe_load(yaml_body)
+        if not isinstance(meta, dict):
+            return {"meta": {}, "text": content}
+            
+        return {"meta": meta, "text": text_body}
+    except ImportError:
+        # yaml не установлен
+        return {"meta": {}, "text": content}
+    except Exception as e:
+        _log_warn(f"YAML parse error in diary: {e}. Fallback to raw text.")
+        # Возвращаем весь контент как текст, если YAML битый
+        return {"meta": {}, "text": content}
+
+
 def get_diary(uid: str, day: Optional[str] = None) -> dict:
     """Fetch the diary entry for `day` (YYYY-MM-DD). Defaults to today.
     Returns {} if no entry exists."""

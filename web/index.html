@@ -1886,9 +1886,22 @@ function showMemoryTrace(step, details) {
 }
 
 // v9.4: Process citations - replace [1], [2] with clickable links (из Thuki)
+// Fix C3: XSS-safe implementation with HTML escaping
+function escapeHtml(text) {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
 function processCitations(bubbleEl) {
   if (!bubbleEl || !window._citationSources || window._citationSources.length === 0) return;
   
+  // Сохраняем оригинальный текст (безопасно)
   const text = bubbleEl.textContent;
   const citationPattern = /\[(\d+)\]/g;
   
@@ -1898,12 +1911,17 @@ function processCitations(bubbleEl) {
   // Reset regex for second pass
   citationPattern.lastIndex = 0;
   
-  // Replace [N] with clickable spans
+  // Replace [N] with clickable spans (XSS-safe)
   const html = text.replace(citationPattern, (match, num) => {
     const idx = parseInt(num) - 1;
     const source = window._citationSources[idx];
     if (source) {
-      return `<a href="#" class="citation-marker" data-citation='${JSON.stringify(source).replace(/'/g, "&apos;")}' onclick="showCitationTooltip(event, this)">${match}</a>`;
+      // Экранируем все данные перед вставкой в HTML
+      const safeTitle = escapeHtml(source.title || "Источник");
+      const safeContent = escapeHtml(source.content || "").substring(0, 200);
+      const safeId = escapeHtml(String(source.id || ''));
+      
+      return `<a href="#" class="citation-marker" data-citation-id="${safeId}" data-citation-title="${safeTitle}" data-citation-content="${safeContent}" onclick="showCitationTooltip(event, this)">${match}</a>`;
     }
     return match;
   });
@@ -1914,7 +1932,14 @@ function processCitations(bubbleEl) {
 // Show citation tooltip on click
 function showCitationTooltip(event, el) {
   event.preventDefault();
-  const source = JSON.parse(el.dataset.citation.replace(/&apos;/g, "'"));
+  
+  // Читаем данные из безопасных data-атрибутов (уже экранированных)
+  const source = {
+    id: el.dataset.citationId,
+    title: el.dataset.citationTitle,
+    content: el.dataset.citationContent,
+    date: el.dataset.citationDate || ''
+  };
   
   // Remove existing tooltips
   const existing = document.querySelector('.citation-tooltip');
@@ -1923,11 +1948,18 @@ function showCitationTooltip(event, el) {
   // Create tooltip
   const tooltip = document.createElement('div');
   tooltip.className = 'citation-tooltip';
+  // Используем textContent для вставки текста (безопасно)
   tooltip.innerHTML = `
-    <div class="tooltip-header">Источник #${source.id}</div>
-    <div class="tooltip-date">${source.date}</div>
-    <div class="tooltip-text">${source.text}</div>
+    <div class="tooltip-header">Источник #${escapeHtml(source.id)}</div>
+    <div class="tooltip-date">${escapeHtml(source.date)}</div>
+    <div class="tooltip-text"></div>
   `;
+  
+  // Безопасная вставка контента через textContent
+  const textContainer = tooltip.querySelector('.tooltip-text');
+  if (textContainer) {
+    textContainer.textContent = source.content;
+  }
   
   // Position near the marker
   const rect = el.getBoundingClientRect();

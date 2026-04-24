@@ -829,19 +829,27 @@ async def consolidate_memories(uid: str, max_time_sec: int = 3600) -> int:
                 _log_exc(f"[CONSOLIDATE] Failed to consolidate topic '{topic}'", e)
                 continue
         
-        # 4. Сохраняем консолидированные записи
+        # 4. Сохраняем консолидированные записи (АТОМАРНО, в транзакции)
         if consolidated_entries:
             with db() as c:
-                for entry in consolidated_entries:
-                    c.execute("""
-                        INSERT INTO message_summaries(user_id, summary_date, summary_content, created_at)
-                        VALUES(?, ?, ?, unixepoch())
-                    """, (uid, entry['date'], entry['content']))
+                try:
+                    c.execute("BEGIN TRANSACTION")
+                    for entry in consolidated_entries:
+                        c.execute("""
+                            INSERT INTO message_summaries(user_id, summary_date, summary_content, created_at)
+                            VALUES(?, ?, ?, unixepoch())
+                        """, (uid, entry['date'], entry['content']))
+                        
+                        # Удаляем старые записи, которые были объединены
+                        placeholders = ','.join('?' * len(entry['source_ids']))
+                        c.execute(f"DELETE FROM message_summaries WHERE id IN ({placeholders})", entry['source_ids'])
                     
-                    # Удаляем старые записи, которые были объединены
-                    # (опционально, можно оставить для истории)
-                    # placeholders = ','.join('?' * len(entry['source_ids']))
-                    # c.execute(f"DELETE FROM message_summaries WHERE id IN ({placeholders})", entry['source_ids'])
+                    c.execute("COMMIT")
+                    _log(f"[CONSOLIDATE] Transaction committed successfully")
+                except Exception as tx_e:
+                    c.execute("ROLLBACK")
+                    _log_exc(f"[CONSOLIDATE] Transaction failed, rolled back", tx_e)
+                    raise
         
         _log(f"[CONSOLIDATE] Completed: processed {processed_count} entries, created {len(consolidated_entries)} consolidated")
         return processed_count

@@ -74,8 +74,9 @@ CREATE TABLE IF NOT EXISTS daily_summaries(id INTEGER PRIMARY KEY AUTOINCREMENT,
 CREATE INDEX IF NOT EXISTS idx_ds ON daily_summaries(user_id,day);
 CREATE TABLE IF NOT EXISTS diary_entries(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT NOT NULL,day TEXT NOT NULL,entry TEXT NOT NULL,ts INTEGER NOT NULL DEFAULT(unixepoch()),UNIQUE(user_id,day));
 CREATE INDEX IF NOT EXISTS idx_diary ON diary_entries(user_id,day);
-CREATE TABLE IF NOT EXISTS message_summaries(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT NOT NULL,summary_date INTEGER NOT NULL,summary_content TEXT NOT NULL,created_at INTEGER NOT NULL DEFAULT(unixepoch()),UNIQUE(user_id,summary_date));
+CREATE TABLE IF NOT EXISTS message_summaries(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT NOT NULL,summary_date INTEGER NOT NULL,summary_content TEXT NOT NULL,is_consolidated INTEGER DEFAULT 0,created_at INTEGER NOT NULL DEFAULT(unixepoch()),UNIQUE(user_id,summary_date));
 CREATE INDEX IF NOT EXISTS idx_ms ON message_summaries(user_id,summary_date DESC);
+CREATE INDEX IF NOT EXISTS idx_ms_consolidated ON message_summaries(user_id,is_consolidated) WHERE is_consolidated IS NOT NULL;
 CREATE TABLE IF NOT EXISTS key_memories(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT NOT NULL,memory_json TEXT NOT NULL,created_at INTEGER NOT NULL DEFAULT(unixepoch()));
 CREATE INDEX IF NOT EXISTS idx_km ON key_memories(user_id,created_at DESC);
 """
@@ -97,7 +98,10 @@ _MIGRATIONS = {
                   # reflection, trait evolution milestones. `last_activity_ts`
                   # is the last message epoch; used to detect session gaps.
                   ("total_msg_count","INTEGER NOT NULL DEFAULT 0"),
-                  ("last_activity_ts","INTEGER NOT NULL DEFAULT 0")],
+                  ("last_activity_ts","INTEGER NOT NULL DEFAULT 0"),
+                  # v9.5: Evolution traits for Maid personality
+                  ("humanity_level","REAL NOT NULL DEFAULT 0.0"),
+                  ("software_version","TEXT NOT NULL DEFAULT '1.0.0'")],
     "long_term_memory":[("category","TEXT NOT NULL DEFAULT 'general'"),("importance","REAL NOT NULL DEFAULT 0.7"),
                         ("emotion_tag","TEXT NOT NULL DEFAULT 'neutral'"),("access_count","INTEGER NOT NULL DEFAULT 0"),
                         ("last_accessed","INTEGER"),
@@ -109,6 +113,8 @@ _MIGRATIONS = {
     "rp_scene":[("location","TEXT NOT NULL DEFAULT ''"),("atmosphere","TEXT NOT NULL DEFAULT ''"),
                 ("last_updated","INTEGER NOT NULL DEFAULT(unixepoch())")],
     "users": [("avatar_path", "TEXT DEFAULT NULL")],
+    # v9.5: Add is_consolidated column to message_summaries if table exists
+    "message_summaries": [("is_consolidated", "INTEGER DEFAULT 0")],
 }
 
 
