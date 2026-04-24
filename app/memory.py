@@ -50,6 +50,11 @@ def _log_exc(msg, exc):
 _RAG_CACHE: Dict[str, tuple] = {}  # key -> (timestamp, result)
 _RAG_CACHE_TTL = 4 * 3600  # 4 часа
 _RAG_CACHE_LOCK = threading.Lock()
+_RAG_CACHE_MAX_SIZE = 100  # LRU: макс. количество записей
+
+# Флаг консолидации памяти (защита от race condition)
+_CONSOLIDATION_LOCK = threading.Lock()
+_IS_CONSOLIDATING: Dict[str, bool] = {}  # uid -> bool
 
 
 def _get_rag_cache_key(uid: str, context_hint: str = "") -> str:
@@ -72,12 +77,14 @@ def _rag_cache_get(key: str) -> Optional[str]:
 
 
 def _rag_cache_set(key: str, value: str):
-    """Запись в кэш."""
+    """Запись в кэш с LRU-вытеснением."""
     with _RAG_CACHE_LOCK:
+        # LRU: если кэш переполнен, удаляем самую старую запись
+        if len(_RAG_CACHE) >= _RAG_CACHE_MAX_SIZE:
+            oldest_key = min(_RAG_CACHE.keys(), key=lambda k: _RAG_CACHE[k][0])
+            del _RAG_CACHE[oldest_key]
+        
         _RAG_CACHE[key] = (time.time(), value)
-        # Очистка старых записей (раз в 100 запросов)
-        if len(_RAG_CACHE) > 1000:
-            _rag_cache_cleanup()
 
 
 def _rag_cache_cleanup():
@@ -744,6 +751,13 @@ async def consolidate_memories(uid: str, max_time_sec: int = 3600) -> int:
     
     start_time = time.time()
     processed_count = 0
+    
+    # Защита от race condition: проверяем, не идет ли уже консолидация
+    with _CONSOLIDATION_LOCK:
+        if _IS_CONSOLIDATING.get(uid, False):
+            _log(f"[CONSOLIDATE] Already consolidating for {uid}, skipping")
+            return 0
+        _IS_CONSOLIDATING[uid] = True
     
     try:
         _log(f"[CONSOLIDATE] Starting memory consolidation for {uid}")

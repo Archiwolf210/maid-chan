@@ -245,9 +245,14 @@ def _save_diary(uid: str, day: str, entry: str, metadata: dict = None) -> None:
     try:
         # If metadata provided, wrap entry in YAML frontmatter
         if metadata:
-            import yaml
-            yaml_frontmatter = yaml.dump(metadata, default_flow_style=False, allow_unicode=True)
-            full_entry = f"---\n{yaml_frontmatter}---\n{entry}"
+            try:
+                import yaml
+                yaml_frontmatter = yaml.dump(metadata, default_flow_style=False, allow_unicode=True)
+                full_entry = f"---\n{yaml_frontmatter}---\n{entry}"
+            except Exception as yaml_err:
+                _log_exc("diary_yaml_frontmatter", yaml_err)
+                # Fallback: save without YAML if parsing fails
+                full_entry = entry
         else:
             full_entry = entry
             
