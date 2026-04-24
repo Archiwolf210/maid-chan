@@ -908,8 +908,30 @@ body.route-settings .layout > .panel-center{visibility:hidden}
       <div class="portrait-ring">
         <div class="portrait-inner" id="portrait-emoji">🌸</div>
       </div>
-      <div class="maid-label">Мэйд</div>
+      <div class="maid-label">Мэйд <span id="software-version" style="font-size:0.65em;color:var(--gold);margin-left:6px;font-family:'Consolas','Courier New',monospace">v1.0.0</span></div>
       <div class="maid-status-txt" id="maid-status-txt">ожидает хозяина...</div>
+      
+      <!-- v9.3: Evolution traits progress bars (Sakura-sou project Akasaka) -->
+      <div class="evolution-tracks" style="margin-top:12px;padding:8px;background:rgba(255,255,255,0.04);border-radius:8px;">
+        <div class="evo-track" title="Человечность">
+          <div style="display:flex;justify-content:space-between;font-size:0.7em;margin-bottom:3px;"><span>Человечность</span><span id="humanity-val">0%</span></div>
+          <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;">
+            <div id="humanity-level" style="height:100%;width:0%;background:linear-gradient(90deg,#ffb7c5,#ff8fa3);transition:width 0.5s ease;"></div>
+          </div>
+        </div>
+        <div class="evo-track" title="Самосознание" style="margin-top:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:0.7em;margin-bottom:3px;"><span>Самосознание</span><span id="self-aware-val">0%</span></div>
+          <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;">
+            <div id="self-awareness-level" style="height:100%;width:0%;background:linear-gradient(90deg,#a8e6cf,#5ddab8);transition:width 0.5s ease;"></div>
+          </div>
+        </div>
+        <div class="evo-track" title="Привязанность" style="margin-top:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:0.7em;margin-bottom:3px;"><span>Привязанность</span><span id="affection-val">0%</span></div>
+          <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;">
+            <div id="affection-level" style="height:100%;width:0%;background:linear-gradient(90deg,#ffd3b6,#ffaaa5);transition:width 0.5s ease;"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- v9.1: immersive live-scene cards (action / atmosphere / thought) -->
@@ -1460,6 +1482,43 @@ function applyState(s) {
   else if (mood < 0.3) statusTxt = 'грустит тихо';
   else if (att > 0.7) statusTxt = 'думает о тебе';
   document.getElementById('maid-status-txt').textContent = statusTxt;
+  
+  // v9.3: Update evolution traits if present
+  if (s.humanity_level !== undefined) updateEvolutionDisplay(s);
+}
+
+// v9.3: Evolution traits display (Sakura-sou project Akasaka)
+function updateEvolutionDisplay(s) {
+  const humanityEl = document.getElementById('humanity-level');
+  const selfAwareEl = document.getElementById('self-awareness-level');
+  const affectionEl = document.getElementById('affection-level');
+  const versionEl = document.getElementById('software-version');
+  const humanityVal = document.getElementById('humanity-val');
+  const selfAwareVal = document.getElementById('self-aware-val');
+  const affectionVal = document.getElementById('affection-val');
+  
+  if (humanityEl) {
+    const val = s.humanity_level || 0.0;
+    const pct = Math.round(val * 100);
+    humanityEl.style.width = pct + '%';
+    humanityEl.parentElement.title = `Человечность: ${pct}%`;
+    if (humanityVal) humanityVal.textContent = pct + '%';
+  }
+  if (selfAwareEl) {
+    const val = s.self_awareness || 0.0;
+    const pct = Math.round(val * 100);
+    selfAwareEl.style.width = pct + '%';
+    if (selfAwareVal) selfAwareVal.textContent = pct + '%';
+  }
+  if (affectionEl) {
+    const val = s.affection || 0.0;
+    const pct = Math.round(val * 100);
+    affectionEl.style.width = pct + '%';
+    if (affectionVal) affectionVal.textContent = pct + '%';
+  }
+  if (versionEl) {
+    versionEl.textContent = 'v' + (s.software_version || '1.0.0');
+  }
 }
 
 function applyGoals(goals) {
@@ -1817,6 +1876,8 @@ async function sendMessage() {
             if (evt.state?.goals) applyGoals(evt.state.goals);
             if (evt.open_topics !== undefined) applyOpenTopics(evt.open_topics);
             if (evt.rp_mode !== undefined) applyRpMode(evt.rp_mode);
+            // v9.3: Update evolution traits display
+            if (evt.state?.humanity_level !== undefined) updateEvolutionDisplay(evt.state);
             // v9.1: kick off live-scene polling for the new turn's immersive.
             // Mark cards as 'loading' to show shimmer; polling will swap when ready.
             markImmersiveLoading(true);

@@ -719,7 +719,11 @@ from app.memory import (  # noqa: E402
     get_memory, get_memory_for_prompt, clear_memory, delete_last_exchange,
     _embedding_cfg, get_embedder, encode_text, _decode_vec, _cosine_topk,
     _ltm_backfill_embeddings, get_ltm_relevant, _EMBEDDER_STATE,
+    get_context_with_summary, summarize_old_messages,
 )
+
+# ── KEY MEMORIES / EVOLUTION TRAITS (v9.3: Sakura-sou project Akasaka) ───────
+from app.services.key_memories import KeyMemoryManager  # noqa: E402
 
 # ── LTM compression (moved to app.llm in v9.2) ───────────────────────────────
 from app.llm import _compress_ltm  # noqa: E402
@@ -1173,8 +1177,8 @@ async def _chat_sse(uid,user_text,cog):
     # Auto-detect open loops in user message
     await loop.run_in_executor(exe,_auto_extract_topics,uid,user_text,cog)
     ltm_facts=await loop.run_in_executor(exe,get_ltm_relevant,uid,user_text,8)
-    # Load history BEFORE saving user message (prevents prompt duplication)
-    history=await loop.run_in_executor(exe,get_memory_for_prompt,uid,limit)
+    # Load history with summarization for long-term coherence (v9.3)
+    history=await loop.run_in_executor(exe,get_context_with_summary,uid,limit,7)
     # Save user message as PENDING -- completed after successful LLM, discarded on error (P2 fix)
     user_msg_id=await loop.run_in_executor(exe,save_message,uid,"user",user_text,cog,"user_input","pending")
     system_static, system_dynamic = await loop.run_in_executor(exe,build_prompt,uid,cog,ltm_facts)
@@ -1192,18 +1196,33 @@ async def _chat_sse(uid,user_text,cog):
         yield b"data: " + _jdumps({"type":"token","text":tok}) + b"\n\n"
     full=full.strip()
     if full and not _is_err(full):
+        # v9.3: Analyze for Key Memories (Sakura-sou evolution system)
+        key_mem_manager = KeyMemoryManager(uid)
+        await loop.run_in_executor(exe, key_mem_manager.analyze_message, user_text, full, state)
+        
         state=await loop.run_in_executor(exe,_post_process,uid,full,user_text,cog,user_msg_id)
+        # v9.3: Apply key memory boosts to state
+        await loop.run_in_executor(exe, key_mem_manager.apply_to_state, state)
+        
         thoughts=await loop.run_in_executor(exe,compute_thoughts,uid,user_text,state,cog)
         action=get_action(user_text,full,state,cfg,cog); scene=get_scene()
         open_topics=await loop.run_in_executor(exe,get_open_topics,uid,2)
         rp_scene_state=await loop.run_in_executor(exe,load_rp_scene,uid)
         session_count = int(state.get("msg_count",0))
         total_count   = int(state.get("total_msg_count",session_count))
+        
+        # v9.3: Add evolution traits and software version to done payload
+        humanity = round(state.get("humanity_level", 0.0), 3)
+        self_aware = round(state.get("self_awareness", 0.0), 3)
+        affection_lvl = round(state.get("affection", 0.0), 3)
+        sw_version = state.get("software_version", "1.0.0")
+        
         done_payload = {"type":"done","action":action,"scene":scene,"thoughts":thoughts,
             "open_topics":[t["topic"][:80] for t in open_topics],
             "rp_mode":rp_scene_state.get("mode","normal"),
             "cognitive":{"intent":cog.intent,"response_mode":cog.response_mode,"meaning":cog.meaning,"maid_emotion":cog.maid_emotion,"maid_intention":cog.maid_intention},
-            "state":{"mood":round(state["mood"],3),"trust":round(state["trust"],3),"fear":round(state["fear"],3),"attachment":round(state["attachment"],3),"curiosity":round(state.get("curiosity",0.5),3),"playfulness":round(state.get("playfulness",0.5),3),"warmth":round(state.get("warmth",0.6),3),"confidence":round(state.get("confidence",0.5),3),"openness":round(state.get("openness",0.5),3),"session_messages":session_count,"total_messages":total_count,"goals":[g for g in state.get("goals",[]) if g.get("status")=="active"]}}
+            "state":{"mood":round(state["mood"],3),"trust":round(state["trust"],3),"fear":round(state["fear"],3),"attachment":round(state["attachment"],3),"curiosity":round(state.get("curiosity",0.5),3),"playfulness":round(state.get("playfulness",0.5),3),"warmth":round(state.get("warmth",0.6),3),"confidence":round(state.get("confidence",0.5),3),"openness":round(state.get("openness",0.5),3),"session_messages":session_count,"total_messages":total_count,"goals":[g for g in state.get("goals",[]) if g.get("status")=="active"],
+                "humanity_level":humanity,"self_awareness":self_aware,"affection":affection_lvl,"software_version":sw_version}}
         yield b"data: " + _jdumps(done_payload) + b"\n\n"
         # v9.1: schedule the immersive (action / atmosphere / thought) update.
         # READ-ONLY w.r.t. memory — only writes to rp_scene + process cache.
