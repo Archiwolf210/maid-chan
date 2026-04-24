@@ -1,0 +1,24 @@
+# Digital Human v9.0 — runtime dependencies
+# Pinned to minimum-stable versions that are actively maintained in 2026.
+# All pure-Python or prebuilt wheels — no compilation required on Windows.
+
+fastapi>=0.115.0,<0.120.0
+uvicorn[standard]>=0.32.0,<0.40.0
+httpx>=0.27.0,<0.29.0
+pydantic>=2.9.0,<3.0.0
+orjson>=3.10.0,<4.0.0
+
+# v9.0: semantic LTM recall (pure ONNX, CPU-only -- no torch, no GPU).
+# fastembed pulls onnxruntime + tokenizers + huggingface_hub (prebuilt wheels).
+# Graceful fallback: if these fail to install, main.py still runs with
+# keyword-only LTM recall.
+fastembed>=0.4.0,<1.0.0
+
+# numpy<2.0 pinned because fastembed<=0.7.x and onnxruntime<=1.19.x were
+# built against numpy 1.x ABI. Upgrading to numpy 2.x breaks tensor interop
+# with ONNX Runtime on Windows. Revisit when fastembed 1.x ships wheels.
+numpy>=1.26.0,<2.0.0
+
+# uvicorn[standard] already pulls in httptools + watchfiles.
+# We intentionally DO NOT pull uvloop -- it's Unix-only; on Windows
+# uvicorn falls back to asyncio automatically.

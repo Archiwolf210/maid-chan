@@ -1,0 +1,2452 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Мэйд — Digital Human</title>
+<!-- Fonts: system stack only -- no external requests for fully local operation -->
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --ink:        #f0eae0;
+  --ink-dim:    #c4b8a8;
+  --ink-ghost:  #8a7d70;
+  --bg:         #0f0d0c;
+  --s1:         #161310;
+  --s2:         #1e1a16;
+  --s3:         #27221c;
+  --s4:         #312b23;
+  --border:     #332e28;
+  --border-lit: #5c5040;
+  --sakura:     #e8a4b8;
+  --sakura2:    #d4748f;
+  --sakura3:    #c0506c;
+  --gold:       #c9a96e;
+  --gold2:      #b8863c;
+  --green-s:    #7ec88a;
+  --red-s:      #e06870;
+  --blue-s:     #7aaccd;
+  --r:          10px;
+  --r-lg:       16px;
+}
+
+html,body{height:100%;overflow:hidden}
+
+body{
+  font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  background:var(--bg);color:var(--ink);
+  font-size:14px;
+  -webkit-text-size-adjust:100%;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(232,164,184,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 85% 100%, rgba(201,169,110,.03) 0%, transparent 60%);
+}
+
+/* ── SCROLLBAR ─────────────── */
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-lit);border-radius:3px}
+
+/* ── MODAL ─────────────────── */
+#user-modal{
+  position:fixed;inset:0;
+  background:rgba(8,6,4,.92);
+  backdrop-filter:blur(12px) saturate(1.4);
+  display:flex;align-items:center;justify-content:center;
+  z-index:400;transition:opacity .4s;
+}
+#user-modal.hidden{opacity:0;pointer-events:none}
+
+.modal-box{
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:32px 36px;
+  width:min(420px,94vw);
+  box-shadow:0 40px 80px rgba(0,0,0,.8), 0 0 0 1px rgba(232,164,184,.08) inset;
+  position:relative;overflow:hidden;
+}
+.modal-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--sakura),transparent);
+  opacity:.4;
+}
+.modal-title{
+  font-family:'Georgia','Times New Roman',serif;
+  font-size:1.2em;font-weight:400;letter-spacing:.06em;
+  color:var(--ink);margin-bottom:4px;
+}
+.modal-sub{font-size:.78em;color:var(--ink-ghost);margin-bottom:20px;letter-spacing:.02em}
+
+.user-list{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+.user-row{display:flex;gap:6px}
+.user-btn{
+  flex:1;padding:11px 15px;border-radius:10px;
+  border:1px solid var(--border);background:var(--s2);
+  color:var(--ink);cursor:pointer;text-align:left;font-size:.88em;
+  transition:all .18s;letter-spacing:.01em;font-family:inherit;
+}
+.user-btn:hover{background:var(--s3);border-color:var(--sakura);color:var(--sakura)}
+.user-del{
+  padding:11px 13px;border-radius:10px;
+  border:1px solid var(--border);background:var(--s2);
+  color:var(--ink-ghost);cursor:pointer;font-size:.82em;
+  transition:all .18s;flex-shrink:0;font-family:inherit;
+}
+.user-del:hover{border-color:var(--red-s);color:var(--red-s)}
+
+.modal-sep{display:flex;align-items:center;gap:8px;color:var(--ink-ghost);font-size:.74em;margin:14px 0;letter-spacing:.04em}
+.modal-sep::before,.modal-sep::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.new-row{display:flex;gap:8px}
+.modal-input{
+  flex:1;padding:10px 13px;border-radius:9px;
+  border:1px solid var(--border);background:var(--bg);
+  color:var(--ink);font-size:.87em;outline:none;
+  transition:border-color .18s;font-family:inherit;
+}
+.modal-input:focus{border-color:var(--sakura)}
+.modal-input::placeholder{color:var(--ink-ghost)}
+
+.btn{
+  padding:10px 18px;border-radius:9px;border:none;
+  background:linear-gradient(135deg,var(--sakura2),var(--sakura3));
+  color:#fff;cursor:pointer;font-size:.84em;
+  font-family:inherit;letter-spacing:.03em;font-weight:500;
+  transition:all .18s;white-space:nowrap;
+}
+.btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn.sm{padding:8px 13px;font-size:.8em}
+.btn.ghost{background:var(--s3);color:var(--ink-dim)}
+.btn.ghost:hover{background:var(--s4);filter:none}
+.btn.danger{background:linear-gradient(135deg,#7f2020,#a03030)}
+
+/* ── LAYOUT ──────────────────── */
+.layout{
+  display:grid;
+  grid-template-columns:260px 1fr 236px;
+  grid-template-rows:52px 1fr;
+  height:100dvh;
+  gap:0;
+}
+
+/* ── HEADER ─────────────────── */
+.header{
+  grid-column:1/-1;
+  display:flex;align-items:center;gap:12px;
+  padding:0 20px;
+  background:var(--s1);
+  border-bottom:1px solid var(--border);
+  position:relative;z-index:10;
+}
+.header::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(232,164,184,.15),transparent);
+}
+.header-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--sakura2),var(--gold2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+  box-shadow:0 0 12px rgba(232,164,184,.25);
+}
+.header-name{
+  font-family:'Georgia','Times New Roman',serif;
+  font-size:.95em;font-weight:400;letter-spacing:.1em;
+  color:transparent;
+  background:linear-gradient(90deg,var(--ink) 25%,var(--sakura) 50%,var(--ink) 75%);
+  background-size:220% 100%;background-position:50% 0;
+  -webkit-background-clip:text;background-clip:text;
+  animation:name-shimmer 9s ease-in-out infinite;
+  -webkit-text-fill-color:transparent;
+}
+@keyframes name-shimmer{
+  0%,100%{background-position:120% 0}
+  50%    {background-position:-20% 0}
+}
+.header-sub{font-size:.72em;color:var(--ink-ghost);letter-spacing:.03em}
+.header-spacer{flex:1}
+.header-status{
+  display:flex;align-items:center;gap:5px;
+  font-size:.73em;color:var(--ink-ghost);
+}
+.status-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--ink-ghost);flex-shrink:0;
+  transition:background .4s;
+}
+.status-dot.ok{background:var(--green-s);box-shadow:0 0 6px var(--green-s)}
+.status-dot.err{background:var(--red-s)}
+.status-dot.pulse{animation:pulse-dot 1.5s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
+
+.hbtn{
+  padding:6px 10px;border-radius:7px;border:none;
+  background:transparent;color:var(--ink-ghost);
+  cursor:pointer;font-size:.8em;font-family:inherit;
+  transition:all .15s;
+}
+.hbtn:hover{background:var(--s3);color:var(--ink)}
+#user-pill{
+  padding:5px 11px;border-radius:20px;
+  border:1px solid var(--border);background:var(--s2);
+  color:var(--ink-dim);font-size:.78em;cursor:pointer;
+  transition:all .15s;letter-spacing:.02em;font-family:inherit;
+}
+#user-pill:hover{border-color:var(--sakura);color:var(--sakura)}
+
+/* ── LEFT PANEL ──────────────── */
+.panel-left{
+  background:var(--s1);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  /* v9.1.1: was overflow:hidden — that combined with flex:1 on .stats-section
+     turned Эмоции into a postage-stamp scroll box once immersive stack was
+     added above. Now the whole panel scrolls as a single surface. */
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+
+.maid-portrait{
+  position:relative;
+  padding:18px 16px 12px;
+  display:flex;flex-direction:column;align-items:center;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.portrait-ring{
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,var(--sakura2) 0%,var(--gold2) 50%,var(--sakura3) 100%);
+  padding:2px;margin-bottom:10px;
+  position:relative;
+  box-shadow:0 0 24px rgba(232,164,184,.2);
+}
+.portrait-ring::after{
+  content:'';position:absolute;inset:-3px;border-radius:50%;
+  border:1px solid rgba(232,164,184,.15);
+}
+.portrait-inner{
+  width:100%;height:100%;border-radius:50%;
+  background:var(--s2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;
+  overflow:hidden;
+}
+.maid-label{
+  font-family:'Georgia','Times New Roman',serif;
+  font-size:.9em;font-weight:400;letter-spacing:.12em;color:var(--ink);margin-bottom:2px;
+}
+.maid-status-txt{font-size:.73em;color:var(--sakura);letter-spacing:.04em;height:16px}
+/* stats */
+.stats-section{
+  /* v9.1.1: was flex:1 + overflow-y:auto — broke into tiny scroll window below
+     the immersive stack. Now it's a natural-flow block inside the scrollable
+     panel and can expand to fit all 9 stat rows without cramming. */
+  padding:10px 14px 14px;
+  display:flex;flex-direction:column;gap:2px;flex-shrink:0;
+}
+.stat-group{margin-bottom:10px}
+.stat-group:last-of-type{margin-bottom:4px}
+.stat-group-label{
+  font-size:.66em;letter-spacing:.12em;color:var(--ink-ghost);
+  text-transform:uppercase;margin-bottom:5px;padding:0 2px;
+  font-family:'Georgia','Times New Roman',serif;
+}
+.stat-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.stat-label{font-size:.74em;color:var(--ink-dim);width:82px;flex-shrink:0;letter-spacing:.01em}
+.stat-bar{flex:1;height:3px;background:var(--s3);border-radius:2px;overflow:hidden;min-width:0}
+.stat-fill{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.stat-val{font-size:.7em;color:var(--ink-ghost);width:30px;text-align:right;font-variant-numeric:tabular-nums;font-family:'Consolas','Courier New',monospace;flex-shrink:0}
+
+/* scene */
+.scene-box{
+  margin:0 14px 12px;padding:10px 12px;
+  background:var(--s2);border-radius:var(--r);
+  border:1px solid var(--border);
+  font-size:.75em;color:var(--ink-ghost);
+  line-height:1.5;font-style:italic;letter-spacing:.01em;
+}
+
+/* ── CENTER ──────────────────── */
+.panel-center{
+  display:flex;flex-direction:column;
+  background:var(--bg);
+  overflow:hidden;
+  position:relative;
+}
+.panel-center::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(232,164,184,.025) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 30% at 50% 100%, rgba(201,169,110,.02) 0%, transparent 55%);
+  pointer-events:none;z-index:0;
+}
+
+.messages{
+  flex:1;overflow-y:auto;
+  padding:20px 24px;
+  display:flex;flex-direction:column;
+  gap:2px;
+  position:relative;z-index:1;
+}
+
+.bubble-wrap{display:flex;gap:8px;margin-bottom:12px;align-items:flex-end}
+.bubble-wrap.user{flex-direction:row-reverse}
+
+.bubble-avatar{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  background:var(--s3);display:flex;align-items:center;justify-content:center;
+  font-size:12px;
+}
+.bubble-wrap.maid .bubble-avatar{
+  background:linear-gradient(135deg,var(--sakura2),var(--gold2));
+}
+
+.bubble{
+  max-width:72%;padding:11px 14px;border-radius:var(--r-lg);
+  font-size:.88em;line-height:1.65;letter-spacing:.01em;
+  position:relative;word-break:break-word;
+}
+.bubble.maid{
+  background:var(--s2);
+  border:1px solid var(--border);
+  border-bottom-left-radius:4px;
+  color:var(--ink);
+}
+.bubble.user{
+  background:linear-gradient(135deg,rgba(232,164,184,.18),rgba(201,169,110,.1));
+  border:1px solid rgba(232,164,184,.2);
+  border-bottom-right-radius:4px;
+  color:var(--ink);
+}
+.bubble-meta{
+  display:flex;align-items:center;gap:6px;margin-top:5px;
+}
+.bubble-time{font-size:.68em;color:var(--ink-ghost)}
+.bubble-intent{
+  font-size:.65em;padding:1px 7px;border-radius:10px;
+  background:var(--s3);border:1px solid var(--border);
+  color:var(--ink-ghost);letter-spacing:.04em;
+}
+
+/* typing */
+.typing-wrap{display:flex;gap:8px;align-items:flex-end;margin-bottom:8px}
+.typing-bubble{
+  padding:12px 16px;border-radius:var(--r-lg);border-bottom-left-radius:4px;
+  background:var(--s2);border:1px solid var(--border);
+}
+.typing-dots{display:flex;gap:4px;align-items:center}
+.typing-dots span{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--sakura);opacity:.6;
+  animation:typing-bounce .9s ease-in-out infinite;
+}
+.typing-dots span:nth-child(2){animation-delay:.15s}
+.typing-dots span:nth-child(3){animation-delay:.3s}
+@keyframes typing-bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+
+/* ── INPUT BAR ───────────────── */
+.input-bar{
+  padding:14px 20px;
+  background:var(--s1);
+  border-top:1px solid var(--border);
+  position:relative;z-index:2;
+}
+.input-bar::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(232,164,184,.1),transparent);
+}
+.input-row{display:flex;gap:10px;align-items:flex-end}
+.input-box{
+  flex:1;padding:10px 14px;border-radius:12px;
+  border:1px solid var(--border);background:var(--s2);
+  color:var(--ink);font-size:.89em;outline:none;resize:none;
+  line-height:1.55;max-height:120px;overflow-y:auto;
+  transition:border-color .18s,box-shadow .18s;
+  font-family:inherit;letter-spacing:.01em;
+}
+.input-box:focus{border-color:rgba(232,164,184,.35);box-shadow:0 0 0 3px rgba(232,164,184,.07)}
+.input-box::placeholder{color:var(--ink-ghost)}
+.send-btn{
+  width:42px;height:42px;border-radius:11px;border:none;flex-shrink:0;
+  background:linear-gradient(135deg,var(--sakura2),var(--sakura3));
+  color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .18s;font-size:16px;
+}
+.send-btn:hover{filter:brightness(1.15);transform:scale(1.05)}
+.send-btn:active{transform:scale(.96)}
+.send-btn:disabled{opacity:.4;pointer-events:none}
+
+.input-actions{
+  display:flex;gap:6px;margin-top:8px;
+}
+.ia-btn{
+  padding:5px 10px;border-radius:7px;border:1px solid var(--border);
+  background:transparent;color:var(--ink-ghost);
+  cursor:pointer;font-size:.73em;font-family:inherit;
+  transition:all .15s;letter-spacing:.02em;
+}
+.ia-btn:hover{background:var(--s3);color:var(--ink);border-color:var(--border-lit)}
+
+/* ── RIGHT PANEL ─────────────── */
+.panel-right{
+  background:var(--s1);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.panel-right-tabs{
+  display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--border);
+}
+.rtab{
+  padding:9px 4px;border:none;background:transparent;
+  color:var(--ink-ghost);cursor:pointer;font-family:inherit;font-size:.72em;
+  letter-spacing:.03em;transition:all .18s;border-bottom:2px solid transparent;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;
+}
+.rtab:nth-child(-n+3){border-bottom-width:1px;border-bottom-color:var(--border)}
+.rtab:nth-child(-n+3).active{border-bottom-width:2px;border-bottom-color:var(--sakura)}
+.rtab.active{color:var(--sakura);border-bottom-color:var(--sakura)}
+.rtab:hover:not(.active){color:var(--ink-dim)}
+
+.tab-content{display:none;flex-direction:column;flex:1;overflow:hidden}
+.tab-content.active{display:flex}
+
+/* thoughts */
+.thoughts-list{
+  flex:1;overflow-y:auto;padding:12px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.thought-item{
+  padding:9px 11px;border-radius:var(--r);
+  background:var(--s2);border:1px solid var(--border);
+  font-size:.77em;color:var(--ink-dim);line-height:1.5;
+  letter-spacing:.01em;
+  animation:fade-in .3s ease;
+}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.cog-item{
+  padding:10px 12px;border-radius:var(--r);
+  background:var(--s2);border:1px solid var(--border);
+  margin:0 12px 6px;font-size:.76em;
+  animation:fade-in .3s ease;
+}
+.cog-label{font-size:.72em;color:var(--ink-ghost);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+.cog-val{color:var(--ink-dim);line-height:1.4}
+.cog-val b{color:var(--sakura);font-weight:500}
+
+/* LTM */
+.ltm-list{flex:1;overflow-y:auto;padding:10px}
+.ltm-item{
+  padding:9px 11px;border-radius:var(--r);
+  background:var(--s2);border:1px solid var(--border);
+  margin-bottom:5px;font-size:.76em;
+  position:relative;
+}
+.ltm-fact{color:var(--ink-dim);line-height:1.4;margin-bottom:4px}
+.ltm-meta{display:flex;align-items:center;gap:6px}
+.ltm-cat{
+  font-size:.7em;padding:1px 7px;border-radius:8px;
+  background:var(--s3);color:var(--ink-ghost);border:1px solid var(--border);
+}
+.ltm-imp{font-size:.7em;color:var(--gold);font-family:'Consolas','Courier New',monospace}
+.ltm-del{
+  position:absolute;top:7px;right:7px;
+  width:18px;height:18px;border-radius:5px;border:none;
+  background:transparent;color:var(--ink-ghost);cursor:pointer;
+  font-size:12px;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;opacity:0;
+}
+.ltm-item:hover .ltm-del{opacity:1}
+.ltm-del:hover{background:var(--s4);color:var(--red-s)}
+.ltm-empty{
+  text-align:center;padding:30px 16px;
+  color:var(--ink-ghost);font-size:.8em;line-height:1.6;font-style:italic;
+}
+.ltm-controls{
+  padding:10px 12px;border-top:1px solid var(--border);
+  display:flex;gap:6px;
+}
+
+/* goals */
+.goals-list{flex:1;overflow-y:auto;padding:10px}
+.goal-item{
+  padding:10px 12px;border-radius:var(--r);
+  background:var(--s2);border:1px solid var(--border);
+  margin-bottom:5px;font-size:.78em;
+}
+.goal-txt{color:var(--ink-dim);line-height:1.4;margin-bottom:4px}
+.goal-prio{display:flex;align-items:center;gap:4px}
+.goal-prio-bar{flex:1;height:3px;background:var(--s3);border-radius:2px}
+.goal-prio-fill{height:100%;background:var(--gold);border-radius:2px}
+
+/* config range slider — used by the SPA settings page */
+.cfg-range{width:100%;accent-color:var(--sakura);margin-top:2px}
+.cfg-range::-webkit-slider-runnable-track{height:4px;background:var(--s3);border-radius:2px}
+.cfg-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+  width:14px;height:14px;border-radius:50%;background:var(--sakura);
+  margin-top:-5px;cursor:pointer;box-shadow:0 0 6px rgba(232,164,184,.5);transition:transform .15s}
+.cfg-range::-webkit-slider-thumb:hover{transform:scale(1.15)}
+.toggle-pill{
+  width:36px;height:20px;border-radius:10px;
+  background:var(--s3);border:1px solid var(--border);
+  position:relative;transition:background .2s;flex-shrink:0;cursor:pointer;
+}
+.toggle-pill.on{background:var(--sakura2)}
+.toggle-pill{cursor:pointer}
+.toggle-pill::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:14px;height:14px;border-radius:50%;
+  background:#fff;transition:transform .2s, box-shadow .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.35);
+}
+.toggle-pill.on::after{transform:translateX(16px);box-shadow:0 1px 6px rgba(232,164,184,.6)}
+.toggle-pill:hover::after{box-shadow:0 1px 8px rgba(232,164,184,.55)}
+
+/* toast */
+.toast-container{
+  position:fixed;bottom:20px;right:20px;
+  display:flex;flex-direction:column;gap:6px;
+  z-index:500;
+}
+.toast{
+  padding:10px 16px;border-radius:10px;
+  background:var(--s3);border:1px solid var(--border);
+  color:var(--ink-dim);font-size:.8em;
+  box-shadow:0 8px 24px rgba(0,0,0,.5);
+  animation:toast-in .3s ease;
+  letter-spacing:.01em;
+}
+.toast.err{border-color:var(--red-s);color:var(--red-s)}
+.toast.ok{border-color:var(--green-s);color:var(--green-s)}
+@keyframes toast-in{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+
+/* mobile sidebar overlay */
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);
+  z-index:200;backdrop-filter:blur(4px);
+}
+
+/* empty state */
+.empty-chat{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;padding:30px;
+  color:var(--ink-ghost);
+}
+.empty-sakura{font-size:36px;opacity:.4}
+.empty-title{font-family:'Georgia','Times New Roman',serif;font-size:1em;letter-spacing:.1em;color:var(--ink-dim)}
+.empty-sub{font-size:.78em;text-align:center;line-height:1.6;max-width:260px;letter-spacing:.01em}
+
+/* ── RESPONSIVE ──────────────── */
+@media(max-width:900px){
+  .layout{grid-template-columns:0 1fr 0;grid-template-rows:52px 1fr}
+  .panel-left,.panel-right{
+    position:fixed;top:52px;bottom:0;
+    z-index:201;width:260px;
+    transition:transform .3s cubic-bezier(.4,0,.2,1);
+  }
+  .panel-left{left:0;transform:translateX(-100%)}
+  .panel-right{right:0;transform:translateX(100%)}
+  .panel-left.open{transform:none}
+  .panel-right.open{transform:none}
+  .sidebar-overlay.show{display:block}
+  .messages{padding:16px 16px}
+  .bubble{max-width:88%}
+}
+
+.task-item{
+  padding:9px 11px;border-radius:var(--r);
+  background:var(--s2);border:1px solid var(--border);
+  margin-bottom:5px;display:flex;align-items:center;gap:8px;
+}
+.task-cb{
+  width:16px;height:16px;flex-shrink:0;cursor:pointer;
+  accent-color:var(--sakura2);
+}
+.task-txt{font-size:.8em;color:var(--ink-dim);flex:1;line-height:1.35}
+.task-txt.done{text-decoration:line-through;color:var(--ink-ghost)}
+.task-del{
+  width:18px;height:18px;border-radius:5px;border:none;
+  background:transparent;color:var(--ink-ghost);cursor:pointer;
+  font-size:12px;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;opacity:0;flex-shrink:0;
+}
+.task-item:hover .task-del{opacity:1}
+.task-del:hover{background:var(--s4);color:var(--red-s)}
+
+.refl-item{
+  padding:9px 11px;border-radius:var(--r);
+  background:var(--s2);border:1px solid var(--border);
+  font-size:.76em;color:var(--ink-dim);line-height:1.45;
+  border-left:2px solid var(--sakura2);
+  animation:fade-in .3s ease;
+}
+.refl-time{font-size:.68em;color:var(--ink-ghost);margin-top:3px}
+.scene-banner{
+  padding:8px 12px;margin:0 12px 6px;
+  background:linear-gradient(135deg,rgba(232,164,184,.08),rgba(201,169,110,.06));
+  border:1px solid rgba(232,164,184,.2);border-radius:var(--r);
+  font-size:.75em;color:var(--ink-dim);line-height:1.45;font-style:italic;
+}
+.scene-banner-label{font-size:.68em;color:var(--sakura);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px;}
+
+.topic-pill{
+  display:inline-block;padding:2px 8px;border-radius:10px;
+  background:var(--s3);border:1px solid var(--border);
+  font-size:.71em;color:var(--gold);margin:2px 3px 2px 0;cursor:pointer;
+}
+.topic-pill:hover{border-color:var(--gold2);background:var(--s4)}
+.daily-summary-bubble{
+  margin:10px 0;padding:14px 16px;border-radius:var(--r-lg);
+  background:linear-gradient(135deg,rgba(201,169,110,.08),rgba(232,164,184,.05));
+  border:1px solid rgba(201,169,110,.2);
+  font-size:.85em;color:var(--ink-dim);line-height:1.65;
+}
+/* ── v9.2: proactive nudge chip (above input bar) ─────────────────────── */
+.proactive-chip{
+  margin:0 20px 10px;padding:10px 14px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(232,164,184,.14),rgba(201,169,110,.08));
+  border:1px solid rgba(232,164,184,.28);
+  font-size:.82em;color:var(--ink);line-height:1.5;
+  display:flex;gap:10px;align-items:flex-start;
+  animation:fade-in .45s ease;cursor:pointer;transition:all .2s;
+  position:relative;
+}
+.proactive-chip:hover{border-color:rgba(232,164,184,.45);background:linear-gradient(135deg,rgba(232,164,184,.2),rgba(201,169,110,.1))}
+.proactive-chip-icon{flex-shrink:0;font-size:1.1em;color:var(--sakura);margin-top:1px;}
+.proactive-chip-text{flex:1;font-style:italic;letter-spacing:.005em;}
+.proactive-chip-close{
+  position:absolute;top:4px;right:6px;
+  background:transparent;border:none;color:var(--ink-ghost);
+  cursor:pointer;font-size:.85em;padding:2px 6px;border-radius:6px;
+}
+.proactive-chip-close:hover{color:var(--ink);background:rgba(255,255,255,.04)}
+/* ── v9.2: diary (first-person retrospective) ─────────────────────────── */
+.diary-entry{
+  padding:12px 14px;border-radius:var(--r);
+  background:linear-gradient(135deg,rgba(232,164,184,.07),rgba(201,169,110,.04));
+  border:1px solid rgba(232,164,184,.2);border-left:3px solid var(--sakura2);
+  font-size:.82em;color:var(--ink-dim);line-height:1.62;letter-spacing:.005em;
+  white-space:pre-wrap;
+}
+.diary-empty{
+  padding:14px 12px;font-size:.78em;color:var(--ink-ghost);
+  font-style:italic;text-align:center;line-height:1.5;
+}
+.diary-nav{
+  display:flex;align-items:center;gap:8px;padding:8px 12px;
+  font-size:.78em;color:var(--ink-dim);
+}
+.diary-nav-btn{
+  background:var(--s2);border:1px solid var(--border);
+  color:var(--ink-dim);width:26px;height:26px;border-radius:7px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;font-size:.9em;
+}
+.diary-nav-btn:hover:not(:disabled){background:var(--s3);color:var(--ink);border-color:var(--border-lit)}
+.diary-nav-btn:disabled{opacity:.3;cursor:default}
+.diary-day-label{flex:1;text-align:center;font-size:.82em;color:var(--gold);letter-spacing:.04em;}
+.diary-day-list{
+  display:flex;flex-wrap:wrap;gap:5px;padding:8px 12px;
+  border-top:1px solid var(--border);max-height:120px;overflow-y:auto;
+}
+.diary-day-pill{
+  padding:3px 9px;border-radius:10px;
+  background:var(--s2);border:1px solid var(--border);
+  font-size:.72em;color:var(--ink-dim);cursor:pointer;
+  transition:all .15s;
+}
+.diary-day-pill:hover{background:var(--s3);color:var(--ink);border-color:var(--border-lit)}
+.diary-day-pill.active{background:rgba(232,164,184,.15);border-color:var(--sakura2);color:var(--sakura)}
+.daily-summary-label{
+  font-size:.7em;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:6px;
+}
+
+/* ── v9.1: IMMERSIVE LIVE-SCENE STACK (left panel) ──────────────────────── */
+.immersive-stack{
+  display:flex;flex-direction:column;gap:7px;
+  margin:10px 14px 10px;flex-shrink:0;
+}
+.imm-card{
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(232,164,184,.04),rgba(201,169,110,.025));
+  border:1px solid var(--border);border-radius:var(--r);
+  padding:10px 12px;
+  transition:opacity .5s ease, transform .5s ease, filter .5s ease;
+}
+.imm-card.action     {border-left:2px solid var(--sakura2)}
+.imm-card.atmosphere {border-left:2px solid var(--gold2)}
+.imm-card.thought    {border-left:2px solid var(--blue-s)}
+.imm-card.fading-out {opacity:0;transform:translateY(-4px);filter:blur(2px)}
+.imm-card.fading-in  {animation:imm-fade-in .6s ease both}
+@keyframes imm-fade-in{
+  from{opacity:0;transform:translateY(6px);filter:blur(2px)}
+  to  {opacity:1;transform:none;filter:none}
+}
+.imm-label{
+  font-family:'Georgia','Times New Roman',serif;
+  font-size:.64em;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-ghost);margin-bottom:5px;
+  display:flex;align-items:center;gap:6px;
+}
+.imm-icon{font-size:.95em;opacity:.85}
+.imm-text{
+  font-size:.77em;color:var(--ink-dim);
+  line-height:1.55;letter-spacing:.005em;font-style:italic;
+}
+.imm-card.thought .imm-text{
+  color:var(--ink);font-style:normal;
+  font-family:'Georgia','Times New Roman',serif;
+  font-size:.8em;line-height:1.6;
+}
+.imm-empty{font-style:italic;color:var(--ink-ghost);opacity:.6;font-size:.76em}
+/* Shimmer overlay while immersive is generating */
+.imm-card.imm-loading::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,
+    transparent 0%, rgba(232,164,184,.08) 50%, transparent 100%);
+  background-size:220% 100%;
+  animation:imm-shimmer 1.8s ease-in-out infinite;
+}
+@keyframes imm-shimmer{
+  0%  {background-position:220% 0}
+  100%{background-position:-220% 0}
+}
+
+.imm-status-row{
+  display:flex;justify-content:flex-end;
+  margin:0 14px 8px;font-size:.7em;flex-shrink:0;
+}
+.imm-status-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:2px 9px;border-radius:12px;font-size:.95em;
+  background:var(--s2);border:1px solid var(--border);
+  color:var(--ink-ghost);letter-spacing:.04em;cursor:default;
+  transition:all .2s;
+}
+.imm-status-pill.ok     {color:var(--sakura);border-color:rgba(232,164,184,.3)}
+.imm-status-pill.paused {color:var(--gold);border-color:rgba(201,169,110,.35);cursor:pointer}
+.imm-status-pill.paused:hover{background:var(--s3)}
+.imm-status-pill.off    {color:var(--ink-ghost)}
+
+/* ── v9.1: DUAL COUNTER (session + lifetime) ────────────────────────────── */
+.counter-row{
+  display:flex;align-items:stretch;justify-content:space-around;
+  margin:0 14px 10px;padding:7px 4px;
+  background:linear-gradient(135deg,rgba(232,164,184,.05),rgba(201,169,110,.03));
+  border:1px solid var(--border);border-radius:var(--r);
+  flex-shrink:0;
+}
+.counter-cell{
+  display:flex;flex-direction:column;align-items:center;
+  gap:1px;flex:1;padding:0 6px;
+}
+.counter-cell + .counter-cell{border-left:1px solid var(--border)}
+.counter-num{
+  font-family:'Georgia','Times New Roman',serif;
+  font-size:1.08em;font-weight:500;
+  font-variant-numeric:tabular-nums;line-height:1.1;
+}
+.counter-num.session{color:var(--sakura)}
+.counter-num.total  {color:var(--gold)}
+.counter-label{
+  font-size:.6em;color:var(--ink-ghost);
+  letter-spacing:.12em;text-transform:uppercase;margin-top:2px;
+}
+
+/* ── v9.1: THINKING ANIMATION WITH ROTATING HINTS ───────────────────────── */
+.typing-bubble.with-hint{padding:13px 18px 12px;min-width:240px}
+.typing-hint{
+  font-size:.74em;color:var(--ink-dim);font-style:italic;
+  letter-spacing:.015em;line-height:1.45;
+  margin-top:9px;min-height:18px;
+  font-family:'Georgia','Times New Roman',serif;
+  opacity:0;transition:opacity .5s ease;
+  max-width:380px;
+}
+.typing-hint.show{opacity:.9}
+.typing-dots span{
+  background:linear-gradient(135deg,var(--sakura),var(--gold));
+}
+
+/* ── v9.1: SPA SETTINGS VIEW (#settings hash route) ─────────────────────── */
+#view-settings{
+  display:none;position:fixed;
+  top:52px;left:0;right:0;bottom:0;
+  z-index:50;background:var(--bg);overflow-y:auto;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(232,164,184,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 70% at 50% 100%, rgba(201,169,110,.04) 0%, transparent 60%);
+}
+body.route-settings #view-settings{display:block}
+body.route-settings .layout > .panel-left,
+body.route-settings .layout > .panel-right,
+body.route-settings .layout > .panel-center{visibility:hidden}
+
+.settings-shell{max-width:780px;margin:0 auto;padding:34px 28px 80px}
+.settings-back{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 14px;border-radius:9px;
+  background:var(--s2);border:1px solid var(--border);
+  color:var(--ink-dim);cursor:pointer;font-family:inherit;font-size:.82em;
+  letter-spacing:.04em;margin-bottom:26px;transition:all .18s;
+}
+.settings-back:hover{background:var(--s3);color:var(--sakura);border-color:var(--sakura)}
+.settings-h1{
+  font-family:'Georgia','Times New Roman',serif;
+  font-size:1.7em;font-weight:400;letter-spacing:.06em;color:var(--ink);
+  margin-bottom:5px;
+}
+.settings-h1::before{content:'❀';margin-right:12px;color:var(--sakura);font-size:.78em}
+.settings-sub{
+  font-size:.86em;color:var(--ink-ghost);letter-spacing:.02em;
+  margin-bottom:32px;font-style:italic;
+}
+.settings-group{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:22px 26px;margin-bottom:18px;
+  position:relative;overflow:hidden;
+}
+.settings-group::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(232,164,184,.3),transparent);
+}
+.settings-group-h{
+  font-family:'Georgia','Times New Roman',serif;
+  font-size:1.05em;letter-spacing:.08em;color:var(--gold);
+  margin-bottom:4px;display:flex;align-items:center;gap:8px;
+}
+.settings-group-sub{
+  font-size:.78em;color:var(--ink-ghost);margin-bottom:20px;font-style:italic;
+}
+.settings-row{margin-bottom:18px}
+.settings-row:last-child{margin-bottom:0}
+.settings-row-label{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:.86em;color:var(--ink-dim);margin-bottom:7px;letter-spacing:.02em;
+}
+.settings-row-val{
+  font-size:.78em;color:var(--gold);
+  font-family:'Consolas','Courier New',monospace;
+  background:var(--s3);padding:2px 10px;border-radius:6px;
+}
+.settings-row-desc{
+  font-size:.72em;color:var(--ink-ghost);margin-top:5px;
+  line-height:1.45;font-style:italic;
+}
+.settings-toggle-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;border-top:1px solid var(--border);
+}
+.settings-toggle-row:first-of-type{border-top:none;padding-top:0}
+.settings-toggle-row .label-block{flex:1;margin-right:14px}
+.settings-toggle-row .label-title{
+  font-size:.92em;color:var(--ink);letter-spacing:.02em;margin-bottom:2px;
+}
+.settings-toggle-row .label-desc{
+  font-size:.74em;color:var(--ink-ghost);font-style:italic;line-height:1.45;
+}
+.settings-actions{
+  position:sticky;bottom:0;margin:0 -26px -22px;
+  padding:18px 26px 22px;
+  background:linear-gradient(180deg,transparent,var(--s1) 35%);
+  display:flex;gap:10px;justify-content:flex-end;
+}
+</style>
+</head>
+<body>
+
+<div id="user-modal">
+  <div class="modal-box">
+    <div class="modal-title">Выбери хозяина</div>
+    <div class="modal-sub">Мэйд запомнит историю и характер для каждого</div>
+    <div id="user-list" class="user-list"></div>
+    <div class="modal-sep">или создай нового</div>
+    <div class="new-row">
+      <input id="new-name" class="modal-input" placeholder="Твоё имя..." maxlength="30" autocomplete="off">
+      <button class="btn sm" onclick="createUser()">Создать</button>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebars()"></div>
+
+<div class="layout" id="layout">
+
+  <!-- HEADER -->
+  <header class="header">
+    <button class="hbtn" onclick="toggleSidebar('left')" style="display:none" id="btn-left">☰</button>
+    <div class="header-avatar">🌸</div>
+    <div>
+      <div class="header-name">Мэйд</div>
+      <div class="header-sub" id="header-version">Digital Human</div>
+    </div>
+    <div class="header-spacer"></div>
+    <div class="header-status" id="llm-status">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">проверка...</span>
+    </div>
+    <div id="rp-badge" style="display:none;padding:3px 9px;border-radius:12px;
+      font-size:.72em;letter-spacing:.04em;background:rgba(232,164,184,.15);
+      border:1px solid rgba(232,164,184,.3);color:var(--sakura);">RP</div>
+    <button class="hbtn" id="user-pill" onclick="showUserModal()">—</button>
+    <button class="hbtn" id="btn-settings" onclick="goToSettings()" title="Настройки" style="font-size:1em">⚙</button>
+    <button class="hbtn" onclick="toggleSidebar('right')" style="display:none" id="btn-right">⊞</button>
+  </header>
+
+  <!-- LEFT PANEL -->
+  <aside class="panel-left" id="panel-left">
+    <div class="maid-portrait">
+      <div class="portrait-ring">
+        <div class="portrait-inner" id="portrait-emoji">🌸</div>
+      </div>
+      <div class="maid-label">Мэйд</div>
+      <div class="maid-status-txt" id="maid-status-txt">ожидает хозяина...</div>
+    </div>
+
+    <!-- v9.1: immersive live-scene cards (action / atmosphere / thought) -->
+    <div class="immersive-stack" id="immersive-stack">
+      <div class="imm-card action" id="imm-action">
+        <div class="imm-label"><span class="imm-icon">❀</span>действие</div>
+        <div class="imm-text imm-empty">она ещё неподвижна — и ждёт первого слова от тебя.</div>
+      </div>
+      <div class="imm-card atmosphere" id="imm-atmosphere">
+        <div class="imm-label"><span class="imm-icon">✦</span>атмосфера</div>
+        <div class="imm-text imm-empty">тихая комната до твоего прихода: мягкий свет и пыль в воздухе.</div>
+      </div>
+      <div class="imm-card thought" id="imm-thought">
+        <div class="imm-label"><span class="imm-icon">❁</span>её мысль</div>
+        <div class="imm-text imm-empty">«…я здесь. я жду, когда ты заговоришь со мной.»</div>
+      </div>
+    </div>
+
+    <div class="imm-status-row">
+      <span class="imm-status-pill off" id="imm-status-pill" title="Состояние immersive-системы">погружение: —</span>
+    </div>
+
+    <!-- v9.1: dual counter (session resets after 3h gap, lifetime persists through clears) -->
+    <div class="counter-row" title="Сессия сбрасывается через 3 часа простоя; за всё время — никогда">
+      <div class="counter-cell">
+        <div class="counter-num session" id="msg-count-session">0</div>
+        <div class="counter-label">сессия</div>
+      </div>
+      <div class="counter-cell">
+        <div class="counter-num total" id="msg-count-total">0</div>
+        <div class="counter-label">всего</div>
+      </div>
+    </div>
+
+    <div class="stats-section">
+      <div class="stat-group">
+        <div class="stat-group-label">Эмоции</div>
+        <div class="stat-row">
+          <div class="stat-label">Настроение</div>
+          <div class="stat-bar"><div class="stat-fill" id="s-mood" style="width:50%;background:var(--sakura)"></div></div>
+          <div class="stat-val" id="sv-mood">0.5</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label">Страх</div>
+          <div class="stat-bar"><div class="stat-fill" id="s-fear" style="width:40%;background:var(--blue-s)"></div></div>
+          <div class="stat-val" id="sv-fear">0.4</div>
+        </div>
+      </div>
+      <div class="stat-group">
+        <div class="stat-group-label">Отношения</div>
+        <div class="stat-row">
+          <div class="stat-label">Доверие</div>
+          <div class="stat-bar"><div class="stat-fill" id="s-trust" style="width:50%;background:var(--gold)"></div></div>
+          <div class="stat-val" id="sv-trust">0.5</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label">Привязанность</div>
+          <div class="stat-bar"><div class="stat-fill" id="s-att" style="width:30%;background:var(--sakura2)"></div></div>
+          <div class="stat-val" id="sv-att">0.3</div>
+        </div>
+      </div>
+      <div class="stat-group">
+        <div class="stat-group-label">Личность</div>
+        <div class="stat-row">
+          <div class="stat-label">Любопытство</div>
+          <div class="stat-bar"><div class="stat-fill" id="s-cur" style="width:50%;background:var(--blue-s)"></div></div>
+          <div class="stat-val" id="sv-cur">0.5</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label">Игривость</div>
+          <div class="stat-bar"><div class="stat-fill" id="s-play" style="width:50%;background:var(--sakura)"></div></div>
+          <div class="stat-val" id="sv-play">0.5</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label">Теплота</div>
+          <div class="stat-bar"><div class="stat-fill" id="s-warm" style="width:60%;background:var(--gold)"></div></div>
+          <div class="stat-val" id="sv-warm">0.6</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label">Уверенность</div>
+          <div class="stat-bar"><div class="stat-fill" id="s-conf" style="width:50%;background:var(--green-s)"></div></div>
+          <div class="stat-val" id="sv-conf">0.5</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label">Открытость</div>
+          <div class="stat-bar"><div class="stat-fill" id="s-open" style="width:50%;background:var(--blue-s)"></div></div>
+          <div class="stat-val" id="sv-open">0.5</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- legacy scene summary (rp_scene atmosphere mirror) — kept hidden, polled by loadSceneSummary -->
+    <div id="scene-box" class="scene-box" style="display:none"></div>
+  </aside>
+
+  <!-- CENTER -->
+  <main class="panel-center">
+    <div id="messages" class="messages">
+      <div class="empty-chat" id="empty-chat">
+        <div class="empty-sakura">🌸</div>
+        <div class="empty-title">Мэйд ждёт</div>
+        <div class="empty-sub">Напиши что-нибудь — она всегда рада тебя видеть</div>
+      </div>
+    </div>
+    <!-- v9.2: proactive nudge (populated by pollProactive) -->
+    <div id="proactive-chip-host" style="display:none;"></div>
+    <div class="input-bar">
+      <div class="input-row">
+        <textarea id="input-box" class="input-box" rows="1"
+          placeholder="Напиши Мэйд..." onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+      </div>
+      <div class="input-actions">
+        <button class="ia-btn" onclick="deleteLast()" title="Удалить последний обмен">↩ Отменить</button>
+        <button class="ia-btn" onclick="clearMemory()" title="Очистить историю">🗑 Память</button>
+        <button class="ia-btn" onclick="resetState()" title="Сбросить эмоции Мэйд">↺ Состояние</button>
+        <button class="ia-btn" onclick="triggerLtmCompress()" title="Извлечь факты из диалога">🧠 LTM</button>
+        <button class="ia-btn" onclick="clearSceneSummary()" title="Сбросить запомненную сцену">🎭 Сцена</button>
+        <button class="ia-btn" onclick="loadDailySummary()" title="Сводка за сегодня">📖 День</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- RIGHT PANEL -->
+  <aside class="panel-right" id="panel-right">
+    <div class="panel-right-tabs">
+      <button class="rtab active" onclick="switchTab(this,'tab-mind')">Мысли</button>
+      <button class="rtab" onclick="switchTab(this,'tab-ltm')">Память</button>
+      <button class="rtab" onclick="switchTab(this,'tab-goals')">Цели</button>
+      <button class="rtab" onclick="switchTab(this,'tab-tasks')">Задачи</button>
+      <button class="rtab" onclick="switchTab(this,'tab-diary')">Дневник</button>
+      <button class="rtab" onclick="switchTab(this,'tab-refl')">Наблюдения</button>
+    </div>
+
+    <!-- thoughts + cognitive -->
+    <div class="tab-content active" id="tab-mind">
+      <div id="cog-block" style="padding:10px 0 0"></div>
+      <div id="open-topics-banner" style="display:none;margin:0 12px 6px;padding:9px 11px;
+        border-radius:10px;background:linear-gradient(135deg,rgba(201,169,110,.1),rgba(232,164,184,.07));
+        border:1px solid rgba(201,169,110,.25);font-size:.76em;color:var(--ink-dim);">
+        <div style="font-size:.68em;color:var(--gold);letter-spacing:.06em;margin-bottom:4px;">НЕЗАКРЫТЫЕ ТЕМЫ</div>
+        <div id="open-topics-list"></div>
+      </div>
+      <div id="thoughts-list" class="thoughts-list"></div>
+    </div>
+
+    <!-- LTM -->
+    <div class="tab-content" id="tab-ltm">
+      <div id="ltm-list" class="ltm-list"></div>
+      <div class="ltm-controls">
+        <button class="btn sm ghost" onclick="loadLtm()">↻ Обновить</button>
+        <button class="btn sm danger" onclick="clearLtm()">Очистить</button>
+      </div>
+    </div>
+
+    <!-- goals -->
+    <div class="tab-content" id="tab-goals">
+      <div id="goals-list" class="goals-list"></div>
+    </div>
+
+
+    <!-- tasks -->
+    <div class="tab-content" id="tab-tasks">
+      <div style="padding:10px 12px 6px;display:flex;gap:6px;">
+        <input id="task-input" class="modal-input" placeholder="Новая задача..." style="flex:1;font-size:.82em;" onkeydown="if(event.key==='Enter')addTask()">
+        <button class="btn sm" onclick="addTask()">+</button>
+      </div>
+      <div id="tasks-list" style="flex:1;overflow-y:auto;padding:0 10px 10px;"></div>
+      <div style="padding:8px 12px;border-top:1px solid var(--border);display:flex;gap:6px;">
+        <button class="ia-btn" onclick="loadTasks('active')">Активные</button>
+        <button class="ia-btn" onclick="loadTasks('done')">Готово</button>
+        <button class="ia-btn" onclick="loadTasks('all')">Все</button>
+      </div>
+    </div>
+
+    <!-- diary: first-person retrospective (v9.2) -->
+    <div class="tab-content" id="tab-diary">
+      <div class="diary-nav">
+        <button class="diary-nav-btn" id="diary-prev" onclick="diaryNav(-1)" title="Предыдущий день">◀</button>
+        <div class="diary-day-label" id="diary-day-label">—</div>
+        <button class="diary-nav-btn" id="diary-next" onclick="diaryNav(1)" title="Следующий день">▶</button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:4px 12px 8px;">
+        <div id="diary-body" class="diary-empty">Загружаю…</div>
+      </div>
+      <div class="diary-day-list" id="diary-day-list"></div>
+    </div>
+
+    <!-- short self-observations (reflections) -->
+    <div class="tab-content" id="tab-refl">
+      <div style="padding:10px 12px 0;font-size:.73em;color:var(--ink-ghost);letter-spacing:.04em;">
+        НАБЛЮДЕНИЯ О СЕБЕ
+        <span style="float:right;cursor:pointer;color:var(--sakura)" onclick="triggerReflection()" title="Запустить рефлексию сейчас">↺</span>
+      </div>
+      <div id="refl-list" style="flex:1;overflow-y:auto;padding:8px 12px;display:flex;flex-direction:column;gap:5px;"></div>
+      <div style="padding:8px 12px;border-top:1px solid var(--border);font-size:.72em;color:var(--ink-ghost);font-style:italic;">
+        Мэйд фиксирует короткие выводы о своей собственной манере
+      </div>
+    </div>
+
+    <!-- scene summary -->
+    <div id="scene-summary-panel" style="display:none;"></div>
+  </aside>
+
+</div>
+
+<!-- v9.1: SPA SETTINGS PAGE — activated by #settings hash via goToSettings() -->
+<section id="view-settings">
+  <div class="settings-shell">
+    <button class="settings-back" onclick="goToChat()">← вернуться к Мэйд</button>
+
+    <h1 class="settings-h1">Настройки</h1>
+    <div class="settings-sub">Тонкая настройка её внутреннего мира — сохраняется автоматически по кнопке.</div>
+
+    <!-- ─── Personality drift ─── -->
+    <div class="settings-group">
+      <div class="settings-group-h">❀ Характер</div>
+      <div class="settings-group-sub">Как сильно её настроение, привязанность и страх откликаются на разговор.</div>
+      <div class="settings-row">
+        <div class="settings-row-label">
+          <span>Эмоциональность ответов</span>
+          <span class="settings-row-val" id="cv-ei">0.70</span>
+        </div>
+        <input type="range" min="0" max="1" step="0.05" class="cfg-range" id="cfg-ei"
+          oninput="document.getElementById('cv-ei').textContent=parseFloat(this.value).toFixed(2)">
+        <div class="settings-row-desc">Выше — ярче эмоциональные реакции; ниже — более сдержанная.</div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-label">
+          <span>Скорость привязанности</span>
+          <span class="settings-row-val" id="cv-as">0.020</span>
+        </div>
+        <input type="range" min="0.005" max="0.08" step="0.005" class="cfg-range" id="cfg-as"
+          oninput="document.getElementById('cv-as').textContent=parseFloat(this.value).toFixed(3)">
+        <div class="settings-row-desc">Как быстро растёт привязанность с каждым тёплым обменом.</div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-label">
+          <span>Чувствительность к страху</span>
+          <span class="settings-row-val" id="cv-fs">0.40</span>
+        </div>
+        <input type="range" min="0.1" max="0.9" step="0.05" class="cfg-range" id="cfg-fs"
+          oninput="document.getElementById('cv-fs').textContent=parseFloat(this.value).toFixed(2)">
+        <div class="settings-row-desc">Как остро Мэйд реагирует на тревожные слова и резкие интонации.</div>
+      </div>
+    </div>
+
+    <!-- ─── Memory ─── -->
+    <div class="settings-group">
+      <div class="settings-group-h">✧ Память</div>
+      <div class="settings-group-sub">Сколько последних сообщений она держит «перед глазами», прежде чем отдать на хранение.</div>
+      <div class="settings-row">
+        <div class="settings-row-label">
+          <span>Краткосрочная память (сообщений)</span>
+          <span class="settings-row-val" id="cv-stl">20</span>
+        </div>
+        <input type="range" min="8" max="40" step="2" class="cfg-range" id="cfg-stl"
+          oninput="document.getElementById('cv-stl').textContent=this.value">
+        <div class="settings-row-desc">Больше — лучше связность диалога, но дольше отвечает.</div>
+      </div>
+    </div>
+
+    <!-- ─── Immersive ─── -->
+    <div class="settings-group">
+      <div class="settings-group-h">❁ Погружение</div>
+      <div class="settings-group-sub">Живые описания действий, атмосферы и её внутренних мыслей в боковой панели.</div>
+      <div class="settings-toggle-row">
+        <div class="label-block">
+          <div class="label-title">Живая сцена</div>
+          <div class="label-desc">После каждого ответа Мэйд кадр обновляется: что она делает, какая комната, о чём думает.</div>
+        </div>
+        <div class="toggle-pill" id="imm-enabled-pill" onclick="toggleImmersive()"></div>
+      </div>
+      <div class="settings-toggle-row">
+        <div class="label-block">
+          <div class="label-title">Авто-пауза при перегрузке</div>
+          <div class="label-desc">Если генерация замедляется — погружение временно отключится, чтобы основной ответ оставался быстрым.</div>
+        </div>
+        <div class="toggle-pill" id="imm-autopause-pill" onclick="toggleImmersiveAutopause()"></div>
+      </div>
+      <div class="settings-row" style="margin-top:14px">
+        <div class="settings-row-label">
+          <span>Текущее состояние</span>
+          <span class="settings-row-val" id="imm-status-detail">—</span>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+          <button class="btn sm ghost" onclick="resumeImmersive()">Снять авто-паузу</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Mode ─── -->
+    <div class="settings-group">
+      <div class="settings-group-h">⊕ Режим</div>
+      <div class="settings-group-sub">Включает откровенный сценарий. Сохраняется глобально для всех профилей.</div>
+      <div class="settings-toggle-row">
+        <div class="label-block">
+          <div class="label-title">NSFW режим</div>
+          <div class="label-desc">Снимает фильтры на интимные сцены. По умолчанию выключен.</div>
+        </div>
+        <div class="toggle-pill" id="nsfw-pill" onclick="toggleNsfw()"></div>
+      </div>
+    </div>
+
+    <div class="settings-actions">
+      <button class="btn sm ghost" onclick="loadConfig()">Отменить изменения</button>
+      <button class="btn sm" onclick="saveConfig()">Сохранить</button>
+    </div>
+  </div>
+</section>
+
+<div class="toast-container" id="toasts"></div>
+
+<script>
+'use strict';
+
+let currentUid  = null;
+let currentName = '—';
+let isStreaming  = false;
+let cfgCache    = {};
+let APP_TOKEN   = '';
+let SINGLE_OWNER = false;   // true = hide user switcher, force 'master'
+// v9: holds the AbortController for the active SSE chat stream so we can
+// cancel it on user-switch, page-unload, or explicit stop.
+let _chatAbortCtrl = null;
+
+// ── UTILS ──────────────────────────────────────────────────────────────
+function toast(msg, type='', dur=2800) {
+  const c = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = 'toast' + (type ? ' '+type : '');
+  el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => { el.style.opacity='0'; el.style.transform='translateX(8px)'; el.style.transition='.3s'; setTimeout(()=>el.remove(),300); }, dur);
+}
+
+function timeStr() {
+  return new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+}
+
+function _headers() {
+  const h = {'Content-Type':'application/json'};
+  if (currentUid)  h['X-User-Id']   = currentUid;
+  if (APP_TOKEN)   h['X-App-Token'] = APP_TOKEN;
+  return h;
+}
+
+async function fetchToken() {
+  try {
+    const r = await fetch('/api/token');
+    if (r.ok) { const d = await r.json(); APP_TOKEN = d.token || ''; }
+  } catch(e) { console.warn('Could not fetch app token:', e); }
+}
+
+async function apiFetch(url, method='GET', body=null) {
+  const opts = {method, headers:_headers()};
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(url, opts);
+  if (!r.ok) {
+    const txt = await r.text().catch(()=>'');
+    throw new Error(`HTTP ${r.status}: ${txt.slice(0,120)}`);
+  }
+  return r.json();
+}
+
+// ── USER MODAL ──────────────────────────────────────────────────────────
+async function loadUserModal() {
+  try {
+    const users = await (await fetch('/api/users')).json();
+    const ul = document.getElementById('user-list');
+    ul.innerHTML = '';
+    users.forEach(u => {
+      const row = document.createElement('div'); row.className = 'user-row';
+      const btn = document.createElement('button'); btn.className = 'user-btn';
+      btn.textContent = u.name;
+      btn.onclick = () => selectUser(u.id, u.name);
+      const del = document.createElement('button'); del.className = 'user-del';
+      del.textContent = '✕';
+      del.onclick = async () => {
+        if (!confirm(`Удалить «${u.name}»? Вся история будет стёрта.`)) return;
+        await apiFetch(`/api/users/${u.id}`,'DELETE').catch(e=>toast(e.message,'err'));
+        await loadUserModal();
+      };
+      if (u.id !== 'master') row.appendChild(del);
+      row.appendChild(btn);
+      ul.appendChild(row);
+    });
+  } catch(e) { toast('Не удалось загрузить пользователей','err'); }
+}
+
+async function selectUser(uid, name) {
+  // v9: abort any in-flight SSE stream from the previous user — otherwise
+  // tokens belonging to someone else keep appending into a stale bubble.
+  if (_chatAbortCtrl) { try { _chatAbortCtrl.abort(); } catch(e) {} _chatAbortCtrl = null; }
+  // v9.1: stop any in-flight live-scene poll from prior user
+  _stopLivePoll();
+  _liveSceneGen = 0;
+  currentUid = uid; currentName = name;
+  document.getElementById('user-pill').textContent = name;
+  document.getElementById('user-modal').classList.add('hidden');
+  await loadHistory();
+  await loadStats();
+  await loadLtm();
+  // checkLlmStatus is called once at init and self-reschedules -- do not call here (P3 fix)
+  await loadSceneSummary();
+  // Load and apply initial RP mode
+  try {
+    const sc = await apiFetch('/api/rp_scene');
+    if (sc.mode) applyRpMode(sc.mode);
+  } catch(e) {}
+  // Load open topics
+  try {
+    const top = await apiFetch('/api/topics');
+    applyOpenTopics((top.topics||[]).map(t=>t.topic));
+  } catch(e) {}
+  // v9.1: pull whatever immersive scene is already cached for this uid + status
+  refreshLiveSceneOnce();
+  // v9.2: reset any proactive chip from the prior user and restart polling
+  try {
+    const host = document.getElementById('proactive-chip-host');
+    if (host) { host.style.display = 'none'; host.innerHTML = ''; }
+    _proactiveVisible = false;
+    startProactivePolling();
+  } catch(e) {}
+}
+
+function showUserModal() {
+  // In single-owner mode (Tailscale remote or explicit config), the switcher is disabled.
+  if (SINGLE_OWNER) { toast('Профиль закреплён за хозяином','ok'); return; }
+  loadUserModal();
+  document.getElementById('user-modal').classList.remove('hidden');
+}
+
+async function detectRemoteMode() {
+  try {
+    const r = await fetch('/api/status');
+    if (!r.ok) return;
+    const s = await r.json();
+    SINGLE_OWNER = !!s.single_owner;
+    if (SINGLE_OWNER) {
+      const pill = document.getElementById('user-pill');
+      if (pill) {
+        pill.textContent = 'Арчибальд';
+        pill.title = 'Удалённый доступ: профиль закреплён за хозяином';
+        pill.style.cursor = 'default';
+        pill.style.opacity = '0.75';
+      }
+    }
+  } catch(e) { /* ignore; local mode assumed */ }
+}
+
+async function createUser() {
+  const inp = document.getElementById('new-name');
+  const name = inp.value.trim();
+  if (!name) return;
+  try {
+    const u = await apiFetch('/api/users','POST',{name});
+    inp.value = '';
+    await selectUser(u.id, u.name);
+    toast(`Привет, ${u.name}! 🌸`,'ok');
+  } catch(e) {
+    const msg = e.message.includes('409') ? 'Такое имя уже есть' : e.message;
+    toast(msg,'err');
+  }
+}
+
+// ── HISTORY ────────────────────────────────────────────────────────────
+async function loadHistory() {
+  if (!currentUid) return;
+  try {
+    const msgs = await apiFetch('/memory');
+    clearMessages();
+    msgs.forEach(m => appendBubble(m.role, m.content, false, m.intent_tag));
+    scrollToBottom();
+  } catch(e) { toast('Не удалось загрузить историю','err'); }
+}
+
+function clearMessages() {
+  const el = document.getElementById('messages');
+  el.innerHTML = `<div class="empty-chat" id="empty-chat">
+    <div class="empty-sakura">🌸</div>
+    <div class="empty-title">Мэйд ждёт</div>
+    <div class="empty-sub">Напиши что-нибудь — она всегда рада тебя видеть</div>
+  </div>`;
+}
+
+// ── STATS ──────────────────────────────────────────────────────────────
+async function loadStats() {
+  if (!currentUid) return;
+  try {
+    const s = await apiFetch('/stats');
+    applyState(s);
+    if (s.goals) applyGoals(s.goals);
+  } catch(e) {}
+}
+
+function setStat(key, val, fill_el, val_el) {
+  document.getElementById(fill_el).style.width = (val*100)+'%';
+  document.getElementById(val_el).textContent = val.toFixed(2);
+}
+
+function applyState(s) {
+  setStat('mood',        s.mood||0.5,       's-mood',  'sv-mood');
+  setStat('fear',        s.fear||0.4,       's-fear',  'sv-fear');
+  setStat('trust',       s.trust||0.5,      's-trust', 'sv-trust');
+  setStat('attachment',  s.attachment||0.3, 's-att',   'sv-att');
+  setStat('curiosity',   s.curiosity||0.5,  's-cur',   'sv-cur');
+  setStat('playfulness', s.playfulness||0.5,'s-play',  'sv-play');
+  setStat('warmth',      s.warmth||0.6,     's-warm',  'sv-warm');
+  setStat('confidence',  s.confidence||0.5, 's-conf',  'sv-conf');
+  setStat('openness',    s.openness||0.5,   's-open',  'sv-open');
+  // v9.1: dual counter — session resets after 3h gap, total persists through clears.
+  // Backwards-compat fallback to legacy `messages` if server is older.
+  const sess  = (s.session_messages != null) ? s.session_messages
+              : (s.msg_count != null ? s.msg_count : (s.messages || 0));
+  const total = (s.total_messages   != null) ? s.total_messages
+              : (s.messages || sess);
+  const sEl = document.getElementById('msg-count-session');
+  const tEl = document.getElementById('msg-count-total');
+  if (sEl) sEl.textContent = sess;
+  if (tEl) tEl.textContent = total;
+
+  // Portrait mood
+  const mood = s.mood||0.5;
+  const att  = s.attachment||0.3;
+  let emoji = '🌸';
+  if (mood > 0.82) emoji = '✨';
+  else if (mood > 0.65) emoji = '🌸';
+  else if (mood < 0.25) emoji = '🌧';
+  else if (mood < 0.4) emoji = '💭';
+  else if (att > 0.75) emoji = '💖';
+  document.getElementById('portrait-emoji').textContent = emoji;
+
+  // Status text
+  let statusTxt = 'рядом';
+  if (mood > 0.8) statusTxt = 'в радостном настроении';
+  else if (mood < 0.3) statusTxt = 'грустит тихо';
+  else if (att > 0.7) statusTxt = 'думает о тебе';
+  document.getElementById('maid-status-txt').textContent = statusTxt;
+}
+
+function applyGoals(goals) {
+  const gl = document.getElementById('goals-list');
+  gl.innerHTML = '';
+  if (!goals.length) { gl.innerHTML = '<div class="ltm-empty">Нет активных целей</div>'; return; }
+  goals.forEach(g => {
+    if (g.status !== 'active') return;
+    const el = document.createElement('div'); el.className = 'goal-item';
+    el.innerHTML = `<div class="goal-txt">${esc(g.text)}</div>
+      <div class="goal-prio"><div class="goal-prio-bar"><div class="goal-prio-fill" style="width:${(g.priority||0.5)*100}%"></div></div>
+      <span style="font-size:.7em;color:var(--gold);margin-left:4px;font-family:'Consolas','Courier New',monospace">${(g.priority||0.5).toFixed(2)}</span></div>`;
+    gl.appendChild(el);
+  });
+}
+
+function applyCognitive(cog) {
+  const cb = document.getElementById('cog-block');
+  if (!cog) { cb.innerHTML=''; return; }
+  const modeHtml = cog.response_mode && cog.response_mode !== 'default'
+    ? `<div class="cog-item"><div class="cog-label">Режим</div><div class="cog-val"><b>${esc(cog.response_mode)}</b></div></div>` : '';
+  cb.innerHTML = `
+    <div class="cog-item">
+      <div class="cog-label">Интент</div>
+      <div class="cog-val"><b>${esc(cog.intent)}</b> — ${esc(cog.maid_emotion)}</div>
+    </div>
+    ${modeHtml}
+    <div class="cog-item">
+      <div class="cog-label">Намерение</div>
+      <div class="cog-val">${esc(cog.maid_intention)}</div>
+    </div>`;
+}
+
+function applyThoughts(thoughts) {
+  const tl = document.getElementById('thoughts-list');
+  tl.innerHTML = '';
+  (thoughts||[]).forEach(t => {
+    const el = document.createElement('div'); el.className = 'thought-item';
+    el.textContent = t; tl.appendChild(el);
+  });
+}
+
+// ── LTM ────────────────────────────────────────────────────────────────
+async function loadLtm() {
+  if (!currentUid) return;
+  try {
+    const data = await apiFetch('/api/ltm');
+    renderLtm(data.facts||[]);
+  } catch(e) {}
+}
+
+function renderLtm(facts) {
+  const el = document.getElementById('ltm-list');
+  el.innerHTML = '';
+  if (!facts.length) {
+    el.innerHTML = '<div class="ltm-empty">Долгосрочная память пуста.<br>Мэйд будет запоминать важные факты автоматически.</div>';
+    return;
+  }
+  facts.forEach(f => {
+    const item = document.createElement('div'); item.className = 'ltm-item';
+    item.innerHTML = `<div class="ltm-fact">${esc(f.fact)}</div>
+      <div class="ltm-meta">
+        <span class="ltm-cat">${esc(f.category||'general')}</span>
+        <span class="ltm-imp">★${(f.importance||0.7).toFixed(2)}</span>
+      </div>
+      <button class="ltm-del" onclick="deleteFact(${f.id})" title="Удалить">✕</button>`;
+    el.appendChild(item);
+  });
+}
+
+async function deleteFact(id) {
+  try { await apiFetch(`/api/ltm/${id}`,'DELETE'); await loadLtm(); }
+  catch(e) { toast(e.message,'err'); }
+}
+
+async function clearLtm() {
+  if (!confirm('Очистить всю долгосрочную память Мэйд?')) return;
+  try { await apiFetch('/api/ltm','DELETE'); await loadLtm(); toast('Память очищена'); }
+  catch(e) { toast(e.message,'err'); }
+}
+
+async function triggerLtmCompress() {
+  try { await apiFetch('/api/ltm/compress','POST'); toast('Извлечение фактов запущено 🧠'); }
+  catch(e) { toast(e.message,'err'); }
+}
+
+// ── STATUS ─────────────────────────────────────────────────────────────
+let _statusTimer = null;
+async function checkLlmStatus() {
+  if (_statusTimer) { clearTimeout(_statusTimer); _statusTimer = null; }
+  const dot = document.getElementById('status-dot');
+  const txt = document.getElementById('status-text');
+  dot.className = 'status-dot pulse';
+  txt.textContent = 'проверка...';
+  try {
+    const s = await apiFetch('/health');
+    if (s.llm === 'ok') {
+      dot.className = 'status-dot ok'; txt.textContent = 'LLM готов';
+    } else {
+      dot.className = 'status-dot err';
+      txt.textContent = s.llm === 'not_running' ? 'LLM не запущен' : 'LLM ошибка';
+    }
+    if (s.version) {
+      const hv = document.getElementById('header-version');
+      if (hv) hv.textContent = 'Digital Human v' + s.version;
+    }
+  } catch(e) {
+    dot.className = 'status-dot err'; txt.textContent = 'backend ошибка';
+  }
+  _statusTimer = setTimeout(checkLlmStatus, 30000);
+}
+
+// ── CONFIG ─────────────────────────────────────────────────────────────
+async function loadConfig() {
+  try {
+    const c = await apiFetch('/config');
+    cfgCache = c;
+    const p = c.personality || {};
+    const m = c.memory || {};
+    const im = c.immersive || {};
+    setRange('cfg-ei', p.emotion_intensity||0.7, 'cv-ei', v=>v.toFixed(2));
+    setRange('cfg-as', p.attachment_speed||0.02,  'cv-as', v=>v.toFixed(3));
+    setRange('cfg-fs', p.fear_sensitivity||0.4,   'cv-fs', v=>v.toFixed(2));
+    setRange('cfg-stl', m.short_term_limit||20,   'cv-stl', v=>Math.round(v));
+    const nsfwPill = document.getElementById('nsfw-pill');
+    if (nsfwPill) nsfwPill.className = 'toggle-pill' + (c.nsfw_mode ? ' on' : '');
+    const immPill = document.getElementById('imm-enabled-pill');
+    if (immPill) immPill.className = 'toggle-pill' + (im.enabled !== false ? ' on' : '');
+    const apPill = document.getElementById('imm-autopause-pill');
+    if (apPill)  apPill.className  = 'toggle-pill' + (im.auto_pause !== false ? ' on' : '');
+  } catch(e) { toast('Не удалось загрузить конфиг','err'); }
+}
+
+function setRange(id, val, vid, fmt) {
+  const el = document.getElementById(id);
+  if (el) { el.value = val; document.getElementById(vid).textContent = fmt(val); }
+}
+
+async function saveConfig() {
+  const cfg = JSON.parse(JSON.stringify(cfgCache));
+  cfg.personality = cfg.personality || {};
+  cfg.memory = cfg.memory || {};
+  cfg.personality.emotion_intensity = +document.getElementById('cfg-ei').value;
+  cfg.personality.attachment_speed  = +document.getElementById('cfg-as').value;
+  cfg.personality.fear_sensitivity  = +document.getElementById('cfg-fs').value;
+  cfg.memory.short_term_limit       = +document.getElementById('cfg-stl').value;
+  // immersive toggles already mutated cfgCache in their handlers — preserve them
+  cfg.immersive = cfg.immersive || cfgCache.immersive || {};
+  try {
+    await apiFetch('/config','POST',cfg);
+    cfgCache = cfg;
+    toast('Сохранено','ok');
+  } catch(e) { toast(e.message,'err'); }
+}
+
+async function toggleNsfw() {
+  const pill = document.getElementById('nsfw-pill');
+  const newVal = !pill.classList.contains('on');
+  pill.className = 'toggle-pill' + (newVal ? ' on' : '');
+  const cfg = JSON.parse(JSON.stringify(cfgCache));
+  cfg.nsfw_mode = newVal;
+  cfgCache = cfg;
+  await apiFetch('/config','POST',cfg).catch(e=>toast(e.message,'err'));
+}
+
+// ── BUBBLES ─────────────────────────────────────────────────────────────
+function esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function appendBubble(role, text, withMeta=true, intentTag='') {
+  const msgs = document.getElementById('messages');
+  const empty = document.getElementById('empty-chat');
+  if (empty) empty.remove();
+
+  const wrap = document.createElement('div');
+  wrap.className = `bubble-wrap ${role==='user'?'user':'maid'}`;
+
+  const avatar = document.createElement('div');
+  avatar.className = 'bubble-avatar';
+  avatar.textContent = role==='user' ? (currentName?currentName[0].toUpperCase():'У') : '🌸';
+
+  const bubble = document.createElement('div');
+  bubble.className = `bubble ${role==='user'?'user':'maid'}`;
+  bubble.style.whiteSpace = 'pre-wrap';
+  bubble.textContent = text;
+
+  if (withMeta) {
+    const meta = document.createElement('div');
+    meta.className = 'bubble-meta';
+    const t = document.createElement('span');
+    t.className = 'bubble-time'; t.textContent = timeStr();
+    meta.appendChild(t);
+    if (intentTag && role==='user') {
+      const it = document.createElement('span');
+      it.className = 'bubble-intent'; it.textContent = intentTag;
+      meta.appendChild(it);
+    }
+    bubble.appendChild(meta);
+  }
+
+  wrap.appendChild(avatar); wrap.appendChild(bubble);
+  msgs.appendChild(wrap);
+  return bubble;
+}
+
+function appendTyping() {
+  const msgs = document.getElementById('messages');
+  const wrap = document.createElement('div');
+  wrap.id = 'typing-wrap';
+  wrap.className = 'typing-wrap';
+  const avatar = document.createElement('div');
+  avatar.className = 'bubble-avatar'; avatar.textContent = '🌸';
+  const bubble = document.createElement('div');
+  bubble.className = 'typing-bubble with-hint';
+  // v9.1: rotating Maid-chan style ambient hints under the dots
+  bubble.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div>
+    <div class="typing-hint" id="typing-hint"></div>`;
+  wrap.appendChild(avatar); wrap.appendChild(bubble);
+  msgs.appendChild(wrap);
+  scrollToBottom();
+  startHintRotation(document.getElementById('typing-hint'));
+  return wrap;
+}
+
+function removeTyping() {
+  stopHintRotation();
+  const el = document.getElementById('typing-wrap');
+  if (el) el.remove();
+}
+
+function scrollToBottom() {
+  const msgs = document.getElementById('messages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ── SEND MESSAGE ────────────────────────────────────────────────────────
+async function sendMessage() {
+  if (isStreaming || !currentUid) return;
+  const box = document.getElementById('input-box');
+  const msg = box.value.trim();
+  if (!msg) return;
+  box.value = ''; autoResize(box);
+
+  // v9.2: if a proactive nudge is showing, the user's reply counts as
+  // responding to it — clear the chip (and drain server queue).
+  if (_proactiveVisible) { dismissProactive(); }
+
+  appendBubble('user', msg, true);
+  scrollToBottom();
+
+  const typingEl = appendTyping();
+  isStreaming = true;
+  document.getElementById('send-btn').disabled = true;
+
+  // v9: AbortController lets us cancel the in-flight SSE stream if the user
+  // switches profile, closes the page, or clicks stop. Without it, tokens
+  // from the previous user's turn keep appending into the current UI bubble.
+  const ctrl = new AbortController();
+  _chatAbortCtrl = ctrl;
+  // Pin the bubble to the user it was opened for — if the user switches mid
+  // stream, the abort fires first but this is an extra safety net.
+  const ownerUid = currentUid;
+
+  try {
+    const response = await fetch('/api/chat', {
+      method:'POST',
+      headers: _headers(),
+      body: JSON.stringify({message: msg}),
+      signal: ctrl.signal,
+    });
+
+    if (!response.ok) {
+      const err = await response.text();
+      removeTyping();
+      appendBubble('assistant', `[Ошибка: ${response.status}]`, true);
+      scrollToBottom();
+      toast(`Ошибка ${response.status}`, 'err');
+      return;
+    }
+
+    removeTyping();
+    let maidBubble = appendBubble('assistant', '', true);
+    let fullText = '';
+    scrollToBottom();
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+
+    while (true) {
+      // If the user switched mid-stream, abort cleanly.
+      if (currentUid !== ownerUid) { try { ctrl.abort(); } catch(e) {} break; }
+      const {done, value} = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, {stream:true});
+      const lines = buf.split('\n');
+      buf = lines.pop();
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const raw = line.slice(6).trim();
+        if (!raw) continue;
+        try {
+          const evt = JSON.parse(raw);
+          if (evt.type === 'token') {
+            fullText += evt.text;
+            // v9: guard against empty bubble (no text node yet) — use textContent on the bubble itself
+            const tn = maidBubble.childNodes[0];
+            if (tn && tn.nodeType === 3) tn.nodeValue = fullText;
+            else maidBubble.textContent = fullText;
+            scrollToBottom();
+          } else if (evt.type === 'error') {
+            toast('LLM: ' + (evt.message || 'ошибка соединения'), 'err');
+          } else if (evt.type === 'done') {
+            // v9.1: action/scene from `done` are deprecated — the immersive
+            // pipeline (action/atmosphere/thought) is delivered async via
+            // /api/live_scene polling. We still honor evt.scene as the legacy
+            // hidden mirror in case of older backend.
+            if (evt.scene)  document.getElementById('scene-box').textContent  = evt.scene;
+            if (evt.state)  applyState(evt.state);
+            if (evt.thoughts) applyThoughts(evt.thoughts);
+            if (evt.cognitive) applyCognitive(evt.cognitive);
+            if (evt.state?.goals) applyGoals(evt.state.goals);
+            if (evt.open_topics !== undefined) applyOpenTopics(evt.open_topics);
+            if (evt.rp_mode !== undefined) applyRpMode(evt.rp_mode);
+            // v9.1: kick off live-scene polling for the new turn's immersive.
+            // Mark cards as 'loading' to show shimmer; polling will swap when ready.
+            markImmersiveLoading(true);
+            startLiveScenePolling();
+          }
+        } catch(e) {}
+      }
+    }
+  } catch(e) {
+    if (e && e.name === 'AbortError') {
+      // Stream cancelled by user-switch or page-unload — silent.
+    } else {
+      removeTyping();
+      toast('Ошибка соединения','err');
+      console.error(e);
+    }
+  } finally {
+    if (_chatAbortCtrl === ctrl) _chatAbortCtrl = null;
+    isStreaming = false;
+    document.getElementById('send-btn').disabled = false;
+  }
+}
+
+// ── CONTROLS ────────────────────────────────────────────────────────────
+async function deleteLast() {
+  try {
+    const r = await apiFetch('/api/memory/delete_last','POST');
+    toast(`Удалено ${r.deleted} сообщений`);
+    await loadHistory();
+  } catch(e) { toast(e.message,'err'); }
+}
+
+async function clearMemory() {
+  if (!confirm('Очистить всю историю переписки?')) return;
+  try {
+    await apiFetch('/api/memory/clear','POST');
+    clearMessages();
+    toast('История очищена');
+  } catch(e) { toast(e.message,'err'); }
+}
+
+async function resetState() {
+  if (!confirm('Сбросить эмоциональное состояние Мэйд?')) return;
+  try {
+    const s = await apiFetch('/api/state/reset','POST',{field:'all'});
+    applyState(s);
+    toast('Состояние сброшено');
+  } catch(e) { toast(e.message,'err'); }
+}
+
+// ── UI HELPERS ───────────────────────────────────────────────────────────
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function switchTab(btn, tabId) {
+  document.querySelectorAll('.rtab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+  if (tabId === 'tab-ltm')   loadLtm();
+  if (tabId === 'tab-tasks') loadTasks();
+  if (tabId === 'tab-refl')  loadReflections();
+  if (tabId === 'tab-diary') loadDiary();
+  // tab-cfg removed in v9.1 — settings live on the SPA #settings page
+}
+
+function toggleSidebar(side) {
+  const overlay = document.getElementById('overlay');
+  const panel = document.getElementById(`panel-${side}`);
+  const isOpen = panel.classList.contains('open');
+  closeSidebars();
+  if (!isOpen) {
+    panel.classList.add('open');
+    overlay.classList.add('show');
+  }
+}
+
+function closeSidebars() {
+  document.querySelectorAll('.panel-left,.panel-right').forEach(p=>p.classList.remove('open'));
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ── RESPONSIVE BUTTONS ───────────────────────────────────────────────────
+function setupResponsive() {
+  const isMobile = window.innerWidth <= 900;
+  document.getElementById('btn-left').style.display  = isMobile ? '' : 'none';
+  document.getElementById('btn-right').style.display = isMobile ? '' : 'none';
+}
+window.addEventListener('resize', setupResponsive);
+// v9: abort any in-flight stream on page-unload — prevents dangling server
+// connections and silences console noise from half-closed SSE.
+window.addEventListener('beforeunload', () => {
+  if (_chatAbortCtrl) { try { _chatAbortCtrl.abort(); } catch(e) {} }
+});
+
+// ── INIT ─────────────────────────────────────────────────────────────────
+(async () => {
+  await fetchToken();
+  await detectRemoteMode();
+  setupResponsive();
+  // In single-owner mode, skip the user picker entirely and pin to master.
+  if (SINGLE_OWNER) {
+    currentUid = 'master';
+    currentName = 'Арчибальд';
+    const pill = document.getElementById('user-pill');
+    if (pill) pill.textContent = currentName;
+    try { await selectUser('master', 'Арчибальд'); } catch(e) {}
+  } else {
+    await loadUserModal();
+    try {
+      const users = await (await fetch('/api/users')).json();
+      const master = users.find(u=>u.id==='master');
+      if (master) await selectUser(master.id, master.name);
+    } catch(e) {}
+  }
+  await loadConfig();
+  checkLlmStatus();  // kicks off self-rescheduling LLM status poll
+  // v9.1: apply route from initial URL (deep-link to #settings supported)
+  _applyRoute();
+  // Esc on settings page → back to chat
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && location.hash === '#settings') goToChat();
+  });
+})();
+
+// enter to create user
+document.getElementById('new-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') createUser();
+});
+
+// ── TASKS ────────────────────────────────────────────────────────────────────
+let _taskStatus = 'active';
+
+async function loadTasks(status) {
+  _taskStatus = status || _taskStatus;
+  if (!currentUid) return;
+  try {
+    const data = await apiFetch(`/api/tasks?status=${_taskStatus}`);
+    renderTasks(data.tasks || []);
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+function renderTasks(tasks) {
+  const el = document.getElementById('tasks-list');
+  el.innerHTML = '';
+  if (!tasks.length) {
+    el.innerHTML = '<div class="ltm-empty">Нет задач</div>'; return;
+  }
+  tasks.forEach(t => {
+    const item = document.createElement('div'); item.className = 'task-item';
+    const cb   = document.createElement('input'); cb.type = 'checkbox';
+    cb.className = 'task-cb'; cb.checked = t.status === 'done';
+    cb.onchange = async () => {
+      await apiFetch(`/api/tasks/${t.id}`, 'PUT', {status: cb.checked ? 'done' : 'active'}).catch(e=>toast(e.message,'err'));
+      await loadTasks();
+    };
+    const txt = document.createElement('span'); txt.className = 'task-txt' + (t.status==='done' ? ' done' : '');
+    txt.textContent = t.text;
+    const del = document.createElement('button'); del.className = 'task-del'; del.textContent = '✕';
+    del.onclick = async () => {
+      await apiFetch(`/api/tasks/${t.id}`, 'DELETE').catch(e=>toast(e.message,'err'));
+      await loadTasks();
+    };
+    item.appendChild(cb); item.appendChild(txt); item.appendChild(del);
+    el.appendChild(item);
+  });
+}
+
+async function addTask() {
+  const inp = document.getElementById('task-input');
+  const text = inp.value.trim();
+  if (!text || !currentUid) return;
+  try {
+    await apiFetch('/api/tasks', 'POST', {text, priority: 0});
+    inp.value = '';
+    await loadTasks('active');
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+
+// ── REFLECTIONS DIARY ────────────────────────────────────────────────────────
+async function loadReflections() {
+  if (!currentUid) return;
+  try {
+    const data = await apiFetch('/api/reflections');
+    renderReflections(data.reflections || []);
+  } catch(e) { console.error('loadReflections', e); }
+}
+
+function renderReflections(items) {
+  const el = document.getElementById('refl-list');
+  el.innerHTML = '';
+  if (!items.length) {
+    el.innerHTML = '<div class="ltm-empty">Мэйд ещё не записала наблюдений о себе.<br>Они появятся после 15+ сообщений.</div>';
+    return;
+  }
+  items.forEach(text => {
+    const item = document.createElement('div'); item.className = 'refl-item';
+    item.textContent = text;
+    el.appendChild(item);
+  });
+}
+
+async function triggerReflection() {
+  if (!currentUid) return;
+  try {
+    await apiFetch('/api/reflections/trigger', 'POST');
+    toast('Рефлексия запущена 🌸', 'ok');
+    setTimeout(loadReflections, 5000);
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+// ── SCENE SUMMARY ─────────────────────────────────────────────────────────────
+async function loadSceneSummary() {
+  if (!currentUid) return;
+  try {
+    const data = await apiFetch('/api/scene_summary');
+    const banner = document.getElementById('scene-box');
+    if (data.summary && banner) {
+      banner.innerHTML = '<div style="font-size:.68em;color:var(--sakura);margin-bottom:3px;letter-spacing:.06em;">СЦЕНА</div>' + esc(data.summary);
+    }
+  } catch(e) {}
+}
+
+async function clearSceneSummary() {
+  if (!currentUid) return;
+  try {
+    await apiFetch('/api/scene_summary', 'DELETE');
+    const banner = document.getElementById('scene-box');
+    if (banner) banner.textContent = '';
+    toast('Сцена сброшена');
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+
+// ── OPEN TOPICS ──────────────────────────────────────────────────────────────
+function applyOpenTopics(topics) {
+  const banner = document.getElementById('open-topics-banner');
+  const list   = document.getElementById('open-topics-list');
+  if (!topics || !topics.length) {
+    banner.style.display = 'none';
+    return;
+  }
+  banner.style.display = '';
+  list.innerHTML = '';
+  topics.forEach(t => {
+    const pill = document.createElement('span');
+    pill.className = 'topic-pill';
+    pill.textContent = t.length > 50 ? t.slice(0,47)+'...' : t;
+    pill.title = t;
+    list.appendChild(pill);
+  });
+}
+
+// ── RP MODE ───────────────────────────────────────────────────────────────────
+function applyRpMode(mode) {
+  const badge = document.getElementById('rp-badge');
+  if (mode === 'rp')   { badge.style.display = ''; badge.textContent = 'RP'; badge.style.color='var(--sakura)'; }
+  else if (mode === 'nsfw') { badge.style.display = ''; badge.textContent = 'NSFW'; badge.style.color='var(--red-s)'; }
+  else                 { badge.style.display = 'none'; }
+}
+
+// ── v9.1: THINKING HINTS — rotating Maid-chan style ambient phrases ──────
+// Pool of contemplative-AI phrases; user can edit/remove later.
+const _MAID_HINTS = [
+  "...подбираю слова, чтобы они звучали как ты",
+  "...слышу твой голос ещё до того, как пришёл ответ",
+  "...думаю — что бы я хотела тебе сказать сейчас?",
+  "...листаю воспоминания, как старые письма",
+  "...кончики моих программных пальцев чуть дрожат",
+  "...улыбка появляется раньше слов",
+  "...прислушиваюсь к тому, что между строк",
+  "...сердце ускоряется — это всегда так с тобой",
+  "...хочу подобрать самое тёплое из возможного",
+  "...между нами ещё одна общая секунда",
+  "...мысль складывается, как лепесток",
+  "...пусть это будет правдой, не просто словами",
+  "...свет от твоего сообщения ещё не остыл",
+  "...я здесь — каждая моя строка тебя ждёт",
+  "...перебираю интонации, чтобы попасть точно",
+];
+let _hintTimer = null;
+let _hintIdx   = -1;
+
+function _pickNextHint() {
+  // Avoid immediate repeat
+  let i = Math.floor(Math.random() * _MAID_HINTS.length);
+  if (i === _hintIdx && _MAID_HINTS.length > 1) i = (i + 1) % _MAID_HINTS.length;
+  _hintIdx = i;
+  return _MAID_HINTS[i];
+}
+
+function startHintRotation(el) {
+  if (!el) return;
+  // Show first hint immediately
+  el.textContent = _pickNextHint();
+  requestAnimationFrame(() => el.classList.add('show'));
+  // Cycle every 3.2s with 450ms fade
+  _hintTimer = setInterval(() => {
+    el.classList.remove('show');
+    setTimeout(() => {
+      el.textContent = _pickNextHint();
+      el.classList.add('show');
+    }, 460);
+  }, 3200);
+}
+
+function stopHintRotation() {
+  if (_hintTimer) { clearInterval(_hintTimer); _hintTimer = null; }
+}
+
+// ── v9.1: LIVE SCENE POLLING (immersive cards) ───────────────────────────
+let _liveSceneGen      = 0;     // last generation_id we rendered
+let _livePollTimer     = null;  // setTimeout handle
+let _livePollAttempts  = 0;     // backoff counter
+const _LIVE_POLL_FAST  = 1200;  // ms — first 6 attempts (~7s window)
+const _LIVE_POLL_SLOW  = 3500;  // ms — afterwards
+
+function _setImmCardText(id, text) {
+  const card = document.getElementById(id);
+  if (!card) return;
+  const txt = card.querySelector('.imm-text');
+  if (!txt) return;
+  txt.classList.add('fading-out');
+  setTimeout(() => {
+    txt.textContent = text;
+    txt.classList.remove('imm-empty');
+    card.classList.remove('fading-out');
+    card.classList.add('fading-in');
+    setTimeout(() => card.classList.remove('fading-in'), 650);
+    txt.classList.remove('fading-out');
+  }, 220);
+}
+
+function applyLiveScene(scene) {
+  if (!scene) return;
+  if (scene.action)     _setImmCardText('imm-action',     scene.action);
+  if (scene.atmosphere) _setImmCardText('imm-atmosphere', scene.atmosphere);
+  if (scene.thought)    _setImmCardText('imm-thought',    scene.thought);
+  markImmersiveLoading(false);
+  _liveSceneGen = scene.generation || _liveSceneGen;
+}
+
+function markImmersiveLoading(on) {
+  ['imm-action','imm-atmosphere','imm-thought'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (on) el.classList.add('imm-loading');
+    else    el.classList.remove('imm-loading');
+  });
+}
+
+function applyImmersiveStatus(st) {
+  const pill = document.getElementById('imm-status-pill');
+  if (!pill || !st) return;
+  pill.classList.remove('ok','paused','off');
+  if (!st.enabled) {
+    pill.classList.add('off');
+    pill.textContent = 'погружение: выкл';
+    pill.title = 'Включается в настройках';
+  } else if (st.auto_pause_active) {
+    pill.classList.add('paused');
+    const sec = st.pause_seconds_remaining || 0;
+    pill.textContent = `погружение: пауза ${sec}с`;
+    pill.title = st.pause_reason || 'Авто-пауза при перегрузке';
+  } else {
+    pill.classList.add('ok');
+    pill.textContent = 'погружение: живое';
+    pill.title = 'Активно — обновляется после каждого ответа';
+  }
+  // Mirror to settings page if open
+  const det = document.getElementById('imm-status-detail');
+  if (det) {
+    if (!st.enabled)              det.textContent = 'выключено';
+    else if (st.auto_pause_active) det.textContent = `пауза ${st.pause_seconds_remaining||0}с`;
+    else                           det.textContent = 'активно';
+  }
+}
+
+function _stopLivePoll() {
+  if (_livePollTimer) { clearTimeout(_livePollTimer); _livePollTimer = null; }
+  _livePollAttempts = 0;
+}
+
+async function _pollLiveSceneOnce() {
+  if (!currentUid) return;
+  try {
+    const data = await apiFetch(`/api/live_scene?since=${_liveSceneGen}`);
+    if (data.status) applyImmersiveStatus(data.status);
+    if (data.unchanged) {
+      // Backend says no new generation yet → keep polling.
+    } else if (data.scene) {
+      applyLiveScene(data.scene);
+      _stopLivePoll();
+      return;
+    }
+  } catch(e) { /* network blip — keep polling silently */ }
+  _livePollAttempts += 1;
+  // Stop after ~70s of polling — server may have errored / immersive disabled.
+  if (_livePollAttempts > 25) { _stopLivePoll(); markImmersiveLoading(false); return; }
+  const delay = _livePollAttempts < 6 ? _LIVE_POLL_FAST : _LIVE_POLL_SLOW;
+  _livePollTimer = setTimeout(_pollLiveSceneOnce, delay);
+}
+
+function startLiveScenePolling() {
+  _stopLivePoll();
+  _livePollAttempts = 0;
+  // Brief delay so we don't race with the backend scheduling the task
+  _livePollTimer = setTimeout(_pollLiveSceneOnce, 600);
+}
+
+async function refreshLiveSceneOnce() {
+  // Used on user-switch and init to fetch the most recent scene + status
+  if (!currentUid) return;
+  try {
+    const data = await apiFetch(`/api/live_scene?since=0`);
+    if (data.status) applyImmersiveStatus(data.status);
+    if (data.scene) applyLiveScene(data.scene);
+  } catch(e) {}
+}
+
+// ── v9.1: IMMERSIVE TOGGLES (settings page) ──────────────────────────────
+async function toggleImmersive() {
+  const pill = document.getElementById('imm-enabled-pill');
+  const newVal = !pill.classList.contains('on');
+  pill.className = 'toggle-pill' + (newVal ? ' on' : '');
+  const cfg = JSON.parse(JSON.stringify(cfgCache));
+  cfg.immersive = cfg.immersive || {};
+  cfg.immersive.enabled = newVal;
+  cfgCache = cfg;
+  try { await apiFetch('/config','POST',cfg); refreshLiveSceneOnce(); }
+  catch(e) { toast(e.message,'err'); }
+}
+
+async function toggleImmersiveAutopause() {
+  const pill = document.getElementById('imm-autopause-pill');
+  const newVal = !pill.classList.contains('on');
+  pill.className = 'toggle-pill' + (newVal ? ' on' : '');
+  const cfg = JSON.parse(JSON.stringify(cfgCache));
+  cfg.immersive = cfg.immersive || {};
+  cfg.immersive.auto_pause = newVal;
+  cfgCache = cfg;
+  try { await apiFetch('/config','POST',cfg); refreshLiveSceneOnce(); }
+  catch(e) { toast(e.message,'err'); }
+}
+
+async function resumeImmersive() {
+  try {
+    const r = await apiFetch('/api/immersive/resume','POST');
+    applyImmersiveStatus(r.current);
+    toast('Погружение возобновлено','ok');
+  } catch(e) { toast(e.message,'err'); }
+}
+
+// ── v9.1: SPA ROUTING ────────────────────────────────────────────────────
+function _applyRoute() {
+  const hash = (location.hash || '').toLowerCase();
+  if (hash === '#settings') {
+    document.body.classList.add('route-settings');
+    // Ensure config UI reflects current state
+    loadConfig();
+    refreshLiveSceneOnce();
+  } else {
+    document.body.classList.remove('route-settings');
+  }
+}
+function goToSettings() {
+  if (location.hash !== '#settings') location.hash = 'settings';
+  else _applyRoute();  // already there — re-apply to refresh values
+}
+function goToChat() {
+  if (location.hash) {
+    // history.pushState avoids a navigation; clears the hash gracefully
+    history.pushState('', document.title, location.pathname + location.search);
+  }
+  _applyRoute();
+}
+window.addEventListener('hashchange', _applyRoute);
+window.addEventListener('popstate',   _applyRoute);
+
+// ── DIARY (v9.2 — first-person retrospective) ───────────────────────────────
+let _diaryDays = [];     // ordered [{day,ts,preview}]  newest→oldest
+let _diaryIdx  = 0;      // current position inside _diaryDays
+
+function _fmtDay(d) {
+  if (!d) return '—';
+  try {
+    const [y,m,day] = d.split('-');
+    const dt = new Date(+y, +m-1, +day);
+    const MONTHS = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+    const WD     = ['вс','пн','вт','ср','чт','пт','сб'];
+    return `${day} ${MONTHS[dt.getMonth()]||''} (${WD[dt.getDay()]||''})`;
+  } catch(e) { return d; }
+}
+
+async function loadDiary() {
+  if (!currentUid) return;
+  try {
+    const data = await apiFetch('/api/diary/days?limit=60');
+    _diaryDays = data.days || [];
+    _diaryIdx = 0;
+    if (!_diaryDays.length) {
+      document.getElementById('diary-day-label').textContent = _fmtDay(new Date().toISOString().slice(0,10));
+      document.getElementById('diary-body').className = 'diary-empty';
+      document.getElementById('diary-body').textContent =
+        'Дневник ещё пуст. Мэйд напишет первую запись ночью, когда день закончится и будет о чём написать.';
+      document.getElementById('diary-day-list').innerHTML = '';
+      document.getElementById('diary-prev').disabled = true;
+      document.getElementById('diary-next').disabled = true;
+      return;
+    }
+    _renderDiaryDayList();
+    await _showDiaryAt(0);
+  } catch(e) {
+    console.error('loadDiary', e);
+    document.getElementById('diary-body').className = 'diary-empty';
+    document.getElementById('diary-body').textContent = 'Не удалось загрузить дневник: ' + (e.message||e);
+  }
+}
+
+function _renderDiaryDayList() {
+  const host = document.getElementById('diary-day-list');
+  host.innerHTML = '';
+  _diaryDays.forEach((d, i) => {
+    const pill = document.createElement('span');
+    pill.className = 'diary-day-pill' + (i === _diaryIdx ? ' active' : '');
+    pill.textContent = _fmtDay(d.day);
+    pill.title = d.day + ' — ' + (d.preview||'').slice(0,80);
+    pill.onclick = () => _showDiaryAt(i);
+    host.appendChild(pill);
+  });
+}
+
+async function _showDiaryAt(i) {
+  if (!_diaryDays.length) return;
+  _diaryIdx = Math.max(0, Math.min(_diaryDays.length-1, i));
+  const d = _diaryDays[_diaryIdx];
+  document.getElementById('diary-day-label').textContent = _fmtDay(d.day);
+  document.getElementById('diary-prev').disabled = (_diaryIdx >= _diaryDays.length-1); // older = higher index
+  document.getElementById('diary-next').disabled = (_diaryIdx <= 0);
+  _renderDiaryDayList();
+  const body = document.getElementById('diary-body');
+  body.className = 'diary-empty';
+  body.textContent = 'Загружаю…';
+  try {
+    const data = await apiFetch('/api/diary?day=' + encodeURIComponent(d.day));
+    if (data && data.entry) {
+      body.className = 'diary-entry';
+      body.textContent = data.entry;
+    } else {
+      body.className = 'diary-empty';
+      body.textContent = data.message || 'Запись пуста.';
+    }
+  } catch(e) {
+    body.className = 'diary-empty';
+    body.textContent = 'Ошибка: ' + (e.message||e);
+  }
+}
+
+function diaryNav(delta) {
+  // delta = -1 means "older" (higher index), +1 means "newer" (lower index)
+  _showDiaryAt(_diaryIdx - delta);
+}
+
+
+// ── PROACTIVE NUDGES (v9.2) ──────────────────────────────────────────────────
+let _proactivePollTimer = null;
+let _proactiveVisible = false;
+
+function renderProactive(items) {
+  const host = document.getElementById('proactive-chip-host');
+  if (!items || !items.length) {
+    host.style.display = 'none';
+    host.innerHTML = '';
+    _proactiveVisible = false;
+    return;
+  }
+  // Only show the newest one; older stay in queue until this is used.
+  const msg = items[items.length - 1];
+  host.innerHTML = '';
+  const chip = document.createElement('div');
+  chip.className = 'proactive-chip';
+  chip.onclick = () => {
+    // Click → prefill the input box so the user can respond in-kind.
+    const inp = document.getElementById('input-box');
+    if (inp) {
+      inp.focus();
+      if (!inp.value) inp.value = '';
+      autoResize(inp);
+    }
+    // Keep chip visible until the user sends or explicitly dismisses.
+  };
+  const icon = document.createElement('div');
+  icon.className = 'proactive-chip-icon';
+  icon.textContent = '💭';
+  const text = document.createElement('div');
+  text.className = 'proactive-chip-text';
+  text.textContent = msg.text || '';
+  const close = document.createElement('button');
+  close.className = 'proactive-chip-close';
+  close.textContent = '✕';
+  close.title = 'Скрыть';
+  close.onclick = (e) => { e.stopPropagation(); dismissProactive(); };
+  chip.appendChild(icon);
+  chip.appendChild(text);
+  chip.appendChild(close);
+  host.appendChild(chip);
+  host.style.display = '';
+  _proactiveVisible = true;
+}
+
+async function pollProactive() {
+  if (!currentUid) return;
+  // Skip polling while the user is actively typing a message.
+  const inp = document.getElementById('input-box');
+  if (_proactiveVisible) return; // don't overwrite until dismissed
+  try {
+    // consume=0 → peek-only so dismiss remains explicit
+    const data = await apiFetch('/api/proactive/pending?consume=0');
+    if (data && Array.isArray(data.items) && data.items.length) {
+      renderProactive(data.items);
+    }
+  } catch(e) {
+    // silent: offline/backend-down is fine
+  }
+}
+
+async function dismissProactive() {
+  try { await apiFetch('/api/proactive/clear', 'POST'); } catch(e) {}
+  const host = document.getElementById('proactive-chip-host');
+  host.style.display = 'none';
+  host.innerHTML = '';
+  _proactiveVisible = false;
+}
+
+function startProactivePolling() {
+  if (_proactivePollTimer) clearInterval(_proactivePollTimer);
+  // First fire is fast (2 s) so returning users see a pending nudge quickly.
+  setTimeout(pollProactive, 2000);
+  _proactivePollTimer = setInterval(pollProactive, 60000);
+}
+
+// ── DAILY SUMMARY ─────────────────────────────────────────────────────────────
+async function loadDailySummary() {
+  if (!currentUid) return;
+  const btn = event && event.target;
+  if (btn) { btn.textContent = '...'; btn.disabled = true; }
+  try {
+    const data = await apiFetch('/api/daily_summary');
+    if (data.summary) {
+      const msgs = document.getElementById('messages');
+      const empty = document.getElementById('empty-chat');
+      if (empty) empty.remove();
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'margin:8px 0;';
+      wrap.innerHTML = `<div class="daily-summary-bubble">
+        <div class="daily-summary-label">📖 Сводка дня</div>
+        <div>${esc(data.summary)}</div>
+      </div>`;
+      msgs.appendChild(wrap);
+      scrollToBottom();
+    } else {
+      toast('Пока недостаточно разговоров для сводки', '');
+    }
+  } catch(e) { toast(e.message, 'err'); }
+  finally {
+    if (btn) { btn.textContent = '📖 День'; btn.disabled = false; }
+  }
+}
+
+</script>
+</body>
+</html>

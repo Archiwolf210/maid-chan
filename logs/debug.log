@@ -1,0 +1,1012 @@
+2026-04-18 21:44:42 [INFO    ] maid | _load_token:124 | App token: 2940df12...
+2026-04-18 21:44:42 [INFO    ] maid | init_db:369 | DB init: C:\Ai\DigitalHuman_v8\memory.db
+2026-04-18 21:44:42 [INFO    ] maid | init_db:378 | Migrated long_term_memory.embedding
+2026-04-18 21:44:42 [INFO    ] maid | init_db:386 | DB ready
+2026-04-18 21:44:42 [INFO    ] maid | _lifespan:1789 | Digital Human v9.0 started
+2026-04-18 21:44:42 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:44:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /
+2026-04-18 21:44:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/token
+2026-04-18 21:44:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/status
+2026-04-18 21:44:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /favicon.ico
+2026-04-18 21:44:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/users
+2026-04-18 21:44:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/users
+2026-04-18 21:44:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /memory
+2026-04-18 21:44:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /stats
+2026-04-18 21:44:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/ltm
+2026-04-18 21:44:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/scene_summary
+2026-04-18 21:44:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/rp_scene
+2026-04-18 21:44:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/topics
+2026-04-18 21:44:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /config
+2026-04-18 21:44:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:45:13 [INFO    ] maid | get_embedder:892 | Loading embedding model: intfloat/multilingual-e5-large (threads=8) -- first run may download ~1 GB
+2026-04-18 21:45:20 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:45:20 [INFO    ] maid | get_embedder:899 | Embedding model ready: dim=1024
+2026-04-18 21:45:50 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:46:20 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:46:50 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:47:20 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:47:50 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:48:20 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:48:51 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:49:21 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:49:51 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:50:54 [INFO    ] maid | _lifespan:1813 | Digital Human v9.0 stopped
+2026-04-18 21:56:57 [INFO    ] maid | _load_token:124 | App token: 2940df12...
+2026-04-18 21:56:57 [INFO    ] maid | init_db:369 | DB init: C:\Ai\DigitalHuman_v8\memory.db
+2026-04-18 21:56:57 [INFO    ] maid | init_db:386 | DB ready
+2026-04-18 21:56:58 [INFO    ] maid | _lifespan:1789 | Digital Human v9.0 started
+2026-04-18 21:56:58 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:57:00 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /
+2026-04-18 21:57:00 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/token
+2026-04-18 21:57:00 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /favicon.ico
+2026-04-18 21:57:00 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/status
+2026-04-18 21:57:00 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/users
+2026-04-18 21:57:00 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/users
+2026-04-18 21:57:00 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /memory
+2026-04-18 21:57:00 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /stats
+2026-04-18 21:57:00 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/ltm
+2026-04-18 21:57:00 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/scene_summary
+2026-04-18 21:57:00 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/rp_scene
+2026-04-18 21:57:00 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/topics
+2026-04-18 21:57:00 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /config
+2026-04-18 21:57:00 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:57:29 [INFO    ] maid | get_embedder:892 | Loading embedding model: intfloat/multilingual-e5-large (threads=8) -- first run may download ~1 GB
+2026-04-18 21:57:36 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:57:36 [INFO    ] maid | get_embedder:899 | Embedding model ready: dim=1024
+2026-04-18 21:57:59 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/ltm
+2026-04-18 21:58:02 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/tasks
+2026-04-18 21:58:03 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/reflections
+2026-04-18 21:58:04 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /config
+2026-04-18 21:58:06 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:58:07 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/reflections
+2026-04-18 21:58:36 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:59:07 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 21:59:37 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:00:07 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:00:37 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:01:07 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:01:15 [INFO    ] maid | chat:1889 | Chat uid=master intent=greeting mode=default
+2026-04-18 22:01:15 [DEBUG   ] maid | _req_log:1845 | HTTP 200 POST /api/chat
+2026-04-18 22:01:37 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:02:07 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:02:38 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:03:08 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:03:38 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:03:57 [DEBUG   ] maid | update_state:627 | State uid=master mood=0.50 att=0.32
+2026-04-18 22:04:09 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:04:40 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:05:10 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:05:40 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:06:02 [INFO    ] maid | chat:1889 | Chat uid=master intent=question mode=default
+2026-04-18 22:06:02 [DEBUG   ] maid | _req_log:1845 | HTTP 200 POST /api/chat
+2026-04-18 22:06:10 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:06:40 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:06:40 [DEBUG   ] maid | update_state:627 | State uid=master mood=0.56 att=0.34
+2026-04-18 22:07:10 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:07:40 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:07:51 [INFO    ] maid | chat:1889 | Chat uid=master intent=other mode=default
+2026-04-18 22:07:51 [DEBUG   ] maid | _req_log:1845 | HTTP 200 POST /api/chat
+2026-04-18 22:08:10 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:08:40 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:09:05 [DEBUG   ] maid | update_state:627 | State uid=master mood=0.56 att=0.36
+2026-04-18 22:09:10 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:09:40 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:09:53 [INFO    ] maid | chat:1889 | Chat uid=master intent=other mode=default
+2026-04-18 22:09:53 [DEBUG   ] maid | _req_log:1845 | HTTP 200 POST /api/chat
+2026-04-18 22:10:10 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:10:40 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:10:56 [DEBUG   ] maid | update_state:627 | State uid=master mood=0.56 att=0.38
+2026-04-18 22:11:10 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:11:13 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/ltm
+2026-04-18 22:11:19 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/tasks
+2026-04-18 22:11:20 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/reflections
+2026-04-18 22:11:21 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/reflections
+2026-04-18 22:11:21 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /config
+2026-04-18 22:11:40 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:12:10 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:12:40 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:13:10 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:13:40 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:14:10 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-18 22:14:30 [INFO    ] maid | _lifespan:1813 | Digital Human v9.0 stopped
+2026-04-19 00:14:59 [INFO    ] maid | _load_token:124 | App token: 2940df12...
+2026-04-19 00:14:59 [INFO    ] maid | init_db:369 | DB init: C:\Ai\DigitalHuman_v8\memory.db
+2026-04-19 00:14:59 [INFO    ] maid | init_db:386 | DB ready
+2026-04-19 00:14:59 [INFO    ] maid | _lifespan:1789 | Digital Human v9.0 started
+2026-04-19 00:15:00 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:15:03 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /
+2026-04-19 00:15:03 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/token
+2026-04-19 00:15:03 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/status
+2026-04-19 00:15:03 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /favicon.ico
+2026-04-19 00:15:03 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/users
+2026-04-19 00:15:03 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/users
+2026-04-19 00:15:03 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /memory
+2026-04-19 00:15:03 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /stats
+2026-04-19 00:15:03 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/ltm
+2026-04-19 00:15:03 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/scene_summary
+2026-04-19 00:15:03 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/rp_scene
+2026-04-19 00:15:03 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/topics
+2026-04-19 00:15:03 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /config
+2026-04-19 00:15:03 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:15:31 [INFO    ] maid | get_embedder:892 | Loading embedding model: intfloat/multilingual-e5-large (threads=8) -- first run may download ~1 GB
+2026-04-19 00:15:38 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:15:39 [INFO    ] maid | get_embedder:899 | Embedding model ready: dim=1024
+2026-04-19 00:16:09 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:16:40 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:17:11 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:17:41 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:18:12 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:18:42 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:19:08 [DEBUG   ] maid | _req_log:1845 | HTTP 200 DELETE /api/scene_summary
+2026-04-19 00:19:13 [DEBUG   ] maid | _req_log:1845 | HTTP 200 POST /api/state/reset
+2026-04-19 00:19:13 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:19:17 [DEBUG   ] maid | _req_log:1845 | HTTP 200 POST /api/memory/clear
+2026-04-19 00:19:31 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/ltm
+2026-04-19 00:19:35 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/tasks
+2026-04-19 00:19:36 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/reflections
+2026-04-19 00:19:37 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /config
+2026-04-19 00:19:43 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:20:05 [INFO    ] maid | chat:1889 | Chat uid=master intent=greeting mode=default
+2026-04-19 00:20:05 [DEBUG   ] maid | _req_log:1845 | HTTP 200 POST /api/chat
+2026-04-19 00:20:13 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:20:37 [DEBUG   ] maid | update_state:627 | State uid=master mood=0.50 att=0.32
+2026-04-19 00:20:43 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:20:58 [INFO    ] maid | chat:1889 | Chat uid=master intent=question mode=default
+2026-04-19 00:20:58 [DEBUG   ] maid | _req_log:1845 | HTTP 200 POST /api/chat
+2026-04-19 00:21:10 [DEBUG   ] maid | update_state:627 | State uid=master mood=0.56 att=0.34
+2026-04-19 00:21:13 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:21:37 [INFO    ] maid | chat:1889 | Chat uid=master intent=other mode=default
+2026-04-19 00:21:37 [DEBUG   ] maid | _req_log:1845 | HTTP 200 POST /api/chat
+2026-04-19 00:21:43 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:21:47 [DEBUG   ] maid | update_state:627 | State uid=master mood=0.56 att=0.36
+2026-04-19 00:22:13 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:22:43 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:22:56 [INFO    ] maid | chat:1889 | Chat uid=master intent=other mode=default
+2026-04-19 00:22:56 [DEBUG   ] maid | _req_log:1845 | HTTP 200 POST /api/chat
+2026-04-19 00:23:06 [DEBUG   ] maid | update_state:627 | State uid=master mood=0.56 att=0.38
+2026-04-19 00:23:13 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:23:27 [INFO    ] maid | chat:1889 | Chat uid=master intent=other mode=default
+2026-04-19 00:23:27 [DEBUG   ] maid | _req_log:1845 | HTTP 200 POST /api/chat
+2026-04-19 00:23:38 [DEBUG   ] maid | update_state:627 | State uid=master mood=0.56 att=0.40
+2026-04-19 00:23:43 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:23:57 [INFO    ] maid | chat:1889 | Chat uid=master intent=other mode=default
+2026-04-19 00:23:57 [DEBUG   ] maid | _req_log:1845 | HTTP 200 POST /api/chat
+2026-04-19 00:24:04 [DEBUG   ] maid | update_state:627 | State uid=master mood=0.62 att=0.42
+2026-04-19 00:24:13 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:24:26 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/ltm
+2026-04-19 00:24:28 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/tasks
+2026-04-19 00:24:29 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /api/reflections
+2026-04-19 00:24:30 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /config
+2026-04-19 00:24:43 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:25:13 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:25:43 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:26:13 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:26:43 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:27:13 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:27:43 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:28:13 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:28:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:29:14 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:29:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:30:14 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:30:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:31:14 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:31:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:32:14 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:32:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:33:14 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:33:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:34:14 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:34:44 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:35:14 [DEBUG   ] maid | _req_log:1845 | HTTP 200 GET /health
+2026-04-19 00:35:15 [INFO    ] maid | _lifespan:1813 | Digital Human v9.0 stopped
+2026-04-19 00:35:53 [INFO    ] maid | _load_token:124 | App token: 2940df12...
+2026-04-19 00:35:53 [INFO    ] maid | init_db:369 | DB init: C:\Ai\DigitalHuman_v8\memory.db
+2026-04-19 00:35:53 [INFO    ] maid | init_db:386 | DB ready
+2026-04-19 00:35:53 [INFO    ] maid | _lifespan:1811 | Digital Human v9.0 started
+2026-04-19 00:36:16 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:36:23 [INFO    ] maid | get_embedder:899 | Loading embedding model: intfloat/multilingual-e5-large (threads=8) -- first run may download ~1 GB
+2026-04-19 00:36:26 [INFO    ] maid | get_embedder:906 | Embedding model ready: dim=1024
+2026-04-19 00:36:46 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:37:16 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:37:46 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:38:16 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:38:24 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /
+2026-04-19 00:38:24 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/token
+2026-04-19 00:38:24 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /favicon.ico
+2026-04-19 00:38:24 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/status
+2026-04-19 00:38:24 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/users
+2026-04-19 00:38:24 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/users
+2026-04-19 00:38:24 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /memory
+2026-04-19 00:38:24 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /stats
+2026-04-19 00:38:24 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/ltm
+2026-04-19 00:38:24 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/scene_summary
+2026-04-19 00:38:24 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/rp_scene
+2026-04-19 00:38:24 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/topics
+2026-04-19 00:38:24 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /config
+2026-04-19 00:38:24 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:38:26 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /
+2026-04-19 00:38:26 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/token
+2026-04-19 00:38:26 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /favicon.ico
+2026-04-19 00:38:26 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/status
+2026-04-19 00:38:26 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/users
+2026-04-19 00:38:26 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/users
+2026-04-19 00:38:26 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /memory
+2026-04-19 00:38:26 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /stats
+2026-04-19 00:38:26 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/ltm
+2026-04-19 00:38:26 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/scene_summary
+2026-04-19 00:38:26 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/rp_scene
+2026-04-19 00:38:26 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/topics
+2026-04-19 00:38:26 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /config
+2026-04-19 00:38:26 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:38:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /
+2026-04-19 00:38:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/token
+2026-04-19 00:38:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /favicon.ico
+2026-04-19 00:38:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/status
+2026-04-19 00:38:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/users
+2026-04-19 00:38:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/users
+2026-04-19 00:38:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /memory
+2026-04-19 00:38:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /stats
+2026-04-19 00:38:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/ltm
+2026-04-19 00:38:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/scene_summary
+2026-04-19 00:38:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/rp_scene
+2026-04-19 00:38:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /api/topics
+2026-04-19 00:38:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /config
+2026-04-19 00:38:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:38:45 [DEBUG   ] maid | _req_log:1867 | HTTP 200 DELETE /api/scene_summary
+2026-04-19 00:38:51 [DEBUG   ] maid | _req_log:1867 | HTTP 200 POST /api/state/reset
+2026-04-19 00:38:55 [DEBUG   ] maid | _req_log:1867 | HTTP 200 POST /api/memory/clear
+2026-04-19 00:38:57 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:39:13 [INFO    ] maid | chat:1911 | Chat uid=master intent=greeting mode=default
+2026-04-19 00:39:13 [DEBUG   ] maid | _req_log:1867 | HTTP 200 POST /api/chat
+2026-04-19 00:39:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:39:48 [DEBUG   ] maid | update_state:634 | State uid=master mood=0.50 att=0.32
+2026-04-19 00:39:57 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:40:21 [INFO    ] maid | chat:1911 | Chat uid=master intent=question mode=default
+2026-04-19 00:40:21 [DEBUG   ] maid | _req_log:1867 | HTTP 200 POST /api/chat
+2026-04-19 00:40:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:40:38 [DEBUG   ] maid | update_state:634 | State uid=master mood=0.56 att=0.34
+2026-04-19 00:40:57 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:41:01 [INFO    ] maid | chat:1911 | Chat uid=master intent=other mode=default
+2026-04-19 00:41:01 [DEBUG   ] maid | _req_log:1867 | HTTP 200 POST /api/chat
+2026-04-19 00:41:14 [DEBUG   ] maid | update_state:634 | State uid=master mood=0.56 att=0.36
+2026-04-19 00:41:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:41:57 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:42:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:42:57 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:43:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:43:39 [INFO    ] maid | chat:1911 | Chat uid=master intent=question mode=default
+2026-04-19 00:43:39 [DEBUG   ] maid | _req_log:1867 | HTTP 200 POST /api/chat
+2026-04-19 00:43:57 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:44:01 [DEBUG   ] maid | update_state:634 | State uid=master mood=0.68 att=0.38
+2026-04-19 00:44:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:44:57 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:45:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:45:57 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:46:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:46:57 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:47:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:47:57 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:48:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:48:57 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:49:00 [INFO    ] maid | chat:1911 | Chat uid=master intent=other mode=default
+2026-04-19 00:49:00 [DEBUG   ] maid | _req_log:1867 | HTTP 200 POST /api/chat
+2026-04-19 00:49:18 [DEBUG   ] maid | update_state:634 | State uid=master mood=0.68 att=0.40
+2026-04-19 00:49:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:49:57 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:50:27 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:50:58 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:51:10 [INFO    ] maid | chat:1911 | Chat uid=master intent=other mode=default
+2026-04-19 00:51:10 [DEBUG   ] maid | _req_log:1867 | HTTP 200 POST /api/chat
+2026-04-19 00:51:28 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:51:33 [DEBUG   ] maid | update_state:634 | State uid=master mood=0.68 att=0.42
+2026-04-19 00:51:58 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:52:01 [INFO    ] maid | chat:1911 | Chat uid=master intent=other mode=default
+2026-04-19 00:52:01 [DEBUG   ] maid | _req_log:1867 | HTTP 200 POST /api/chat
+2026-04-19 00:52:22 [DEBUG   ] maid | update_state:634 | State uid=master mood=0.67 att=0.44
+2026-04-19 00:52:28 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:52:58 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:53:28 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:53:58 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:54:28 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:54:58 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:55:28 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:55:58 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:56:28 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:56:58 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:57:28 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:57:58 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:58:28 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:58:58 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:59:28 [DEBUG   ] maid | _req_log:1867 | HTTP 200 GET /health
+2026-04-19 00:59:29 [INFO    ] maid | _lifespan:1835 | Digital Human v9.0 stopped
+2026-04-19 00:59:48 [INFO    ] maid | _load_token:124 | App token: 2940df12...
+2026-04-19 00:59:48 [INFO    ] maid | init_db:369 | DB init: C:\Ai\DigitalHuman_v8\memory.db
+2026-04-19 00:59:48 [INFO    ] maid | init_db:386 | DB ready
+2026-04-19 00:59:49 [INFO    ] maid | _lifespan:1819 | Digital Human v9.0 started
+2026-04-19 00:59:58 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:00:19 [INFO    ] maid | get_embedder:899 | Loading embedding model: intfloat/multilingual-e5-large (threads=8) -- first run may download ~1 GB
+2026-04-19 01:00:22 [INFO    ] maid | get_embedder:906 | Embedding model ready: dim=1024
+2026-04-19 01:00:28 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:00:33 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /
+2026-04-19 01:00:33 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/token
+2026-04-19 01:00:33 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /favicon.ico
+2026-04-19 01:00:33 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/status
+2026-04-19 01:00:33 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/users
+2026-04-19 01:00:33 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/users
+2026-04-19 01:00:33 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /memory
+2026-04-19 01:00:33 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /stats
+2026-04-19 01:00:33 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/ltm
+2026-04-19 01:00:33 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/scene_summary
+2026-04-19 01:00:33 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/rp_scene
+2026-04-19 01:00:33 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/topics
+2026-04-19 01:00:33 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /config
+2026-04-19 01:00:33 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:00:34 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /
+2026-04-19 01:00:34 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/token
+2026-04-19 01:00:34 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /favicon.ico
+2026-04-19 01:00:34 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/status
+2026-04-19 01:00:34 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/users
+2026-04-19 01:00:34 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/users
+2026-04-19 01:00:34 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /memory
+2026-04-19 01:00:34 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /stats
+2026-04-19 01:00:34 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/ltm
+2026-04-19 01:00:34 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/scene_summary
+2026-04-19 01:00:34 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/rp_scene
+2026-04-19 01:00:34 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/topics
+2026-04-19 01:00:34 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /config
+2026-04-19 01:00:34 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:00:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /
+2026-04-19 01:00:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/token
+2026-04-19 01:00:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/status
+2026-04-19 01:00:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /favicon.ico
+2026-04-19 01:00:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/users
+2026-04-19 01:00:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/users
+2026-04-19 01:00:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /memory
+2026-04-19 01:00:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /stats
+2026-04-19 01:00:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/ltm
+2026-04-19 01:00:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/scene_summary
+2026-04-19 01:00:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/rp_scene
+2026-04-19 01:00:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/topics
+2026-04-19 01:00:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /config
+2026-04-19 01:00:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:01:05 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:01:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 DELETE /api/scene_summary
+2026-04-19 01:01:12 [DEBUG   ] maid | _req_log:1875 | HTTP 200 POST /api/state/reset
+2026-04-19 01:01:16 [DEBUG   ] maid | _req_log:1875 | HTTP 200 POST /api/memory/clear
+2026-04-19 01:01:26 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/ltm
+2026-04-19 01:01:29 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/tasks
+2026-04-19 01:01:30 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /api/reflections
+2026-04-19 01:01:31 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /config
+2026-04-19 01:01:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:02:05 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:02:17 [INFO    ] maid | chat:1919 | Chat uid=master intent=greeting mode=default
+2026-04-19 01:02:17 [DEBUG   ] maid | _req_log:1875 | HTTP 200 POST /api/chat
+2026-04-19 01:02:30 [DEBUG   ] maid | update_state:634 | State uid=master mood=0.50 att=0.32
+2026-04-19 01:02:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:03:05 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:03:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:03:49 [INFO    ] maid | chat:1919 | Chat uid=master intent=other mode=default
+2026-04-19 01:03:49 [DEBUG   ] maid | _req_log:1875 | HTTP 200 POST /api/chat
+2026-04-19 01:04:00 [DEBUG   ] maid | update_state:634 | State uid=master mood=0.50 att=0.34
+2026-04-19 01:04:05 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:04:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:04:55 [INFO    ] maid | chat:1919 | Chat uid=master intent=other mode=default
+2026-04-19 01:04:55 [DEBUG   ] maid | _req_log:1875 | HTTP 200 POST /api/chat
+2026-04-19 01:05:03 [DEBUG   ] maid | update_state:634 | State uid=master mood=0.56 att=0.36
+2026-04-19 01:05:05 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:05:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:05:43 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /config
+2026-04-19 01:05:45 [DEBUG   ] maid | _req_log:1875 | HTTP 200 POST /config
+2026-04-19 01:05:46 [DEBUG   ] maid | _req_log:1875 | HTTP 200 POST /config
+2026-04-19 01:05:52 [DEBUG   ] maid | _req_log:1875 | HTTP 200 POST /config
+2026-04-19 01:06:02 [INFO    ] maid | chat:1919 | Chat uid=master intent=question mode=default
+2026-04-19 01:06:02 [DEBUG   ] maid | _req_log:1875 | HTTP 200 POST /api/chat
+2026-04-19 01:06:05 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:06:26 [DEBUG   ] maid | update_state:634 | State uid=master mood=0.56 att=0.38
+2026-04-19 01:06:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:07:05 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:07:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:07:44 [INFO    ] maid | chat:1919 | Chat uid=master intent=question mode=default
+2026-04-19 01:07:44 [DEBUG   ] maid | _req_log:1875 | HTTP 200 POST /api/chat
+2026-04-19 01:07:56 [DEBUG   ] maid | update_state:634 | State uid=master mood=0.62 att=0.40
+2026-04-19 01:08:05 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:08:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:08:52 [INFO    ] maid | chat:1919 | Chat uid=master intent=question mode=default
+2026-04-19 01:08:52 [DEBUG   ] maid | _req_log:1875 | HTTP 200 POST /api/chat
+2026-04-19 01:09:05 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:09:06 [DEBUG   ] maid | update_state:634 | State uid=master mood=0.62 att=0.42
+2026-04-19 01:09:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:09:38 [INFO    ] maid | chat:1919 | Chat uid=master intent=nsfw mode=default
+2026-04-19 01:09:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 POST /api/chat
+2026-04-19 01:09:52 [DEBUG   ] maid | update_state:634 | State uid=master mood=0.65 att=0.44
+2026-04-19 01:10:05 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:10:18 [INFO    ] maid | chat:1919 | Chat uid=master intent=other mode=default
+2026-04-19 01:10:18 [DEBUG   ] maid | _req_log:1875 | HTTP 200 POST /api/chat
+2026-04-19 01:10:32 [DEBUG   ] maid | update_state:634 | State uid=master mood=0.64 att=0.46
+2026-04-19 01:10:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:11:05 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:11:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:12:05 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:12:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:13:05 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:13:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:14:05 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:14:35 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:15:05 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:15:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:16:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:16:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:17:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:17:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:18:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:18:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:19:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:19:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:20:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:20:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:21:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:21:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:22:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:22:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:23:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:23:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:24:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:24:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:25:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:25:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:26:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:26:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:27:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:27:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:28:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:28:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:29:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:29:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:30:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:30:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:31:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:31:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:32:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:32:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:33:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:33:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:34:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:34:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:35:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:35:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:36:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:36:36 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:37:06 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:37:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:38:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:38:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:39:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:39:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:40:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:40:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:41:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:41:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:42:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:42:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:43:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:43:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:44:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:44:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:45:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:45:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:46:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:46:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:47:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:47:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:48:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:48:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:49:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:49:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:50:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:50:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:51:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:51:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:52:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:52:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:53:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:53:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:54:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:54:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:55:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:55:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:56:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:56:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:57:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:57:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:58:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:58:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:59:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 01:59:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:00:07 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:00:37 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:01:08 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:01:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:02:08 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:02:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:03:08 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:03:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:04:08 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:04:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:05:08 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:05:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:06:08 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:06:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:07:08 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:07:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:08:08 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:08:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:09:08 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:09:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:10:08 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:10:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:11:08 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:11:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:12:08 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:12:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:13:08 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:13:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:14:08 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:14:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:15:08 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:15:38 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:16:09 [DEBUG   ] maid | _req_log:1875 | HTTP 200 GET /health
+2026-04-19 02:16:38 [INFO    ] maid | _lifespan:1843 | Digital Human v9.0 stopped
+2026-04-19 13:46:26 [INFO    ] maid | _load_token:124 | App token: 2940df12...
+2026-04-19 13:46:26 [INFO    ] maid | init_db:419 | DB init: C:\Ai\DigitalHuman_v8\memory.db
+2026-04-19 13:46:26 [INFO    ] maid | init_db:428 | Migrated user_state.total_msg_count
+2026-04-19 13:46:26 [INFO    ] maid | init_db:428 | Migrated user_state.last_activity_ts
+2026-04-19 13:46:26 [INFO    ] maid | init_db:442 | DB ready
+2026-04-19 13:46:27 [INFO    ] maid | _lifespan:2274 | Digital Human v9.0 started
+2026-04-19 13:46:27 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:46:30 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /
+2026-04-19 13:46:30 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/token
+2026-04-19 13:46:30 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/status
+2026-04-19 13:46:30 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /favicon.ico
+2026-04-19 13:46:30 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/users
+2026-04-19 13:46:30 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/users
+2026-04-19 13:46:30 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /memory
+2026-04-19 13:46:30 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /stats
+2026-04-19 13:46:30 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/ltm
+2026-04-19 13:46:30 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/scene_summary
+2026-04-19 13:46:30 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/rp_scene
+2026-04-19 13:46:30 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/topics
+2026-04-19 13:46:30 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /config
+2026-04-19 13:46:30 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:46:30 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:46:59 [INFO    ] maid | get_embedder:984 | Loading embedding model: intfloat/multilingual-e5-large (threads=8) -- first run may download ~1 GB
+2026-04-19 13:47:05 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:47:06 [INFO    ] maid | get_embedder:991 | Embedding model ready: dim=1024
+2026-04-19 13:47:35 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:48:05 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:48:29 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/ltm
+2026-04-19 13:48:35 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:48:38 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/tasks
+2026-04-19 13:48:39 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/reflections
+2026-04-19 13:48:44 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /config
+2026-04-19 13:48:44 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /favicon.ico
+2026-04-19 13:48:44 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /config
+2026-04-19 13:48:44 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:48:44 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:49:05 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:49:11 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /favicon.ico
+2026-04-19 13:49:35 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:49:58 [DEBUG   ] maid | _req_log:2330 | HTTP 200 DELETE /api/scene_summary
+2026-04-19 13:50:03 [DEBUG   ] maid | _req_log:2330 | HTTP 200 POST /api/state/reset
+2026-04-19 13:50:05 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:50:10 [DEBUG   ] maid | _req_log:2330 | HTTP 200 POST /api/memory/clear
+2026-04-19 13:50:13 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/ltm
+2026-04-19 13:50:15 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/tasks
+2026-04-19 13:50:17 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/reflections
+2026-04-19 13:50:40 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:50:56 [INFO    ] maid | chat:2374 | Chat uid=master intent=greeting mode=default
+2026-04-19 13:50:56 [DEBUG   ] maid | _req_log:2330 | HTTP 200 POST /api/chat
+2026-04-19 13:51:00 [DEBUG   ] maid | update_state:705 | State uid=master mood=0.50 att=0.32 session=1 total=26
+2026-04-19 13:51:01 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:02 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:03 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:05 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:06 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:07 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:10 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:51:10 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:14 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:15 [WARNING ] maid | _build_live_scene_async:1504 | Immersive JSON parse failed uid=master len=0
+2026-04-19 13:51:15 [DEBUG   ] maid | _build_live_scene_async:1505 | Immersive raw: 
+2026-04-19 13:51:17 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:21 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:25 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:28 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:32 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:35 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:39 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:40 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:51:42 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:46 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:49 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:53 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:51:56 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:52:00 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:52:03 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:52:07 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:52:10 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:52:10 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:52:14 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:52:17 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:52:40 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:53:10 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:53:12 [INFO    ] maid | chat:2374 | Chat uid=master intent=complaint mode=default
+2026-04-19 13:53:12 [DEBUG   ] maid | _req_log:2330 | HTTP 200 POST /api/chat
+2026-04-19 13:53:15 [DEBUG   ] maid | update_state:705 | State uid=master mood=0.50 att=0.34 session=2 total=27
+2026-04-19 13:53:16 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:53:17 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:53:18 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:53:19 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:53:21 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:53:22 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:53:25 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:53:29 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:53:31 [WARNING ] maid | _build_live_scene_async:1504 | Immersive JSON parse failed uid=master len=0
+2026-04-19 13:53:31 [DEBUG   ] maid | _build_live_scene_async:1505 | Immersive raw: 
+2026-04-19 13:53:32 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:53:36 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:53:39 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:53:40 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:53:43 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:53:46 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:53:50 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:53:53 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:53:57 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:54:00 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:54:04 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:54:07 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:54:10 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:54:11 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:54:14 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:54:18 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:54:22 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:54:25 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:54:29 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:54:32 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /api/live_scene
+2026-04-19 13:54:40 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:55:11 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:55:42 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:56:13 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:56:44 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:57:15 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:57:46 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:58:17 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:58:48 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:59:19 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 13:59:50 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 14:00:21 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 14:00:52 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 14:01:23 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 14:01:54 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 14:02:25 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 14:02:56 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 14:03:27 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 14:03:58 [DEBUG   ] maid | _req_log:2330 | HTTP 200 GET /health
+2026-04-19 14:04:27 [INFO    ] maid | _lifespan:2298 | Digital Human v9.0 stopped
+2026-04-19 14:15:07 [INFO    ] maid | _load_token:124 | App token: 2940df12...
+2026-04-19 14:15:07 [INFO    ] maid | init_db:419 | DB init: C:\Ai\DigitalHuman_v8\memory.db
+2026-04-19 14:15:07 [INFO    ] maid | init_db:442 | DB ready
+2026-04-19 14:15:07 [INFO    ] maid | _lifespan:2299 | Digital Human v9.0 started
+2026-04-19 14:15:07 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /health
+2026-04-19 14:15:09 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /
+2026-04-19 14:15:10 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/token
+2026-04-19 14:15:10 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/status
+2026-04-19 14:15:10 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /favicon.ico
+2026-04-19 14:15:10 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/users
+2026-04-19 14:15:10 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/users
+2026-04-19 14:15:10 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /memory
+2026-04-19 14:15:10 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /stats
+2026-04-19 14:15:10 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/ltm
+2026-04-19 14:15:10 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/scene_summary
+2026-04-19 14:15:10 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/rp_scene
+2026-04-19 14:15:10 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/topics
+2026-04-19 14:15:10 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /config
+2026-04-19 14:15:10 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:15:10 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /health
+2026-04-19 14:15:39 [INFO    ] maid | get_embedder:984 | Loading embedding model: intfloat/multilingual-e5-large (threads=8) -- first run may download ~1 GB
+2026-04-19 14:15:42 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /health
+2026-04-19 14:15:42 [INFO    ] maid | get_embedder:991 | Embedding model ready: dim=1024
+2026-04-19 14:16:04 [DEBUG   ] maid | _req_log:2355 | HTTP 200 DELETE /api/scene_summary
+2026-04-19 14:16:08 [DEBUG   ] maid | _req_log:2355 | HTTP 200 POST /api/state/reset
+2026-04-19 14:16:13 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /health
+2026-04-19 14:16:13 [DEBUG   ] maid | _req_log:2355 | HTTP 200 POST /api/memory/clear
+2026-04-19 14:16:43 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /config
+2026-04-19 14:16:43 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:16:43 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /favicon.ico
+2026-04-19 14:16:43 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /config
+2026-04-19 14:16:43 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:16:43 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /health
+2026-04-19 14:16:46 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /config
+2026-04-19 14:16:46 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:16:48 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /config
+2026-04-19 14:16:48 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:16:51 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /favicon.ico
+2026-04-19 14:17:13 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /health
+2026-04-19 14:17:35 [INFO    ] maid | chat:2399 | Chat uid=master intent=greeting mode=default
+2026-04-19 14:17:35 [DEBUG   ] maid | _req_log:2355 | HTTP 200 POST /api/chat
+2026-04-19 14:17:38 [DEBUG   ] maid | update_state:705 | State uid=master mood=0.50 att=0.32 session=1 total=28
+2026-04-19 14:17:38 [WARNING ] maid | _build_live_scene_async:1517 | Immersive LLM HTTP 400 uid=master mode=normal attempt=1
+2026-04-19 14:17:39 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:17:40 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:17:41 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:17:43 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:17:43 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /health
+2026-04-19 14:17:44 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:17:45 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:17:49 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:17:52 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:17:54 [WARNING ] maid | _build_live_scene_async:1528 | Immersive JSON parse fail uid=master mode=normal attempt=2 len=0 preview=''
+2026-04-19 14:17:56 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:17:59 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:03 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:06 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:10 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:13 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:13 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /health
+2026-04-19 14:18:17 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:20 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:24 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:27 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:31 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:34 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:38 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:41 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:43 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /health
+2026-04-19 14:18:45 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:48 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:52 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:18:55 [DEBUG   ] maid | _req_log:2355 | HTTP 200 GET /api/live_scene
+2026-04-19 14:19:53 [INFO    ] maid | _lifespan:2323 | Digital Human v9.0 stopped
+2026-04-19 14:31:06 [INFO    ] maid | _load_token:124 | App token: 2940df12...
+2026-04-19 14:31:06 [INFO    ] maid | init_db:419 | DB init: C:\Ai\DigitalHuman_v8\memory.db
+2026-04-19 14:31:06 [INFO    ] maid | init_db:442 | DB ready
+2026-04-19 14:31:06 [INFO    ] maid | _lifespan:2297 | Digital Human v9.0 started
+2026-04-19 14:31:06 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /health
+2026-04-19 14:31:08 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /
+2026-04-19 14:31:09 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/token
+2026-04-19 14:31:09 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /favicon.ico
+2026-04-19 14:31:09 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/status
+2026-04-19 14:31:09 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/users
+2026-04-19 14:31:09 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/users
+2026-04-19 14:31:09 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /memory
+2026-04-19 14:31:09 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /stats
+2026-04-19 14:31:09 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/ltm
+2026-04-19 14:31:09 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/scene_summary
+2026-04-19 14:31:09 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/rp_scene
+2026-04-19 14:31:09 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/topics
+2026-04-19 14:31:09 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /config
+2026-04-19 14:31:09 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/live_scene
+2026-04-19 14:31:09 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /health
+2026-04-19 14:31:18 [DEBUG   ] maid | _req_log:2353 | HTTP 200 DELETE /api/scene_summary
+2026-04-19 14:31:22 [DEBUG   ] maid | _req_log:2353 | HTTP 200 POST /api/state/reset
+2026-04-19 14:31:27 [DEBUG   ] maid | _req_log:2353 | HTTP 200 POST /api/memory/clear
+2026-04-19 14:31:37 [INFO    ] maid | get_embedder:984 | Loading embedding model: intfloat/multilingual-e5-large (threads=8) -- first run may download ~1 GB
+2026-04-19 14:31:40 [INFO    ] maid | get_embedder:991 | Embedding model ready: dim=1024
+2026-04-19 14:31:40 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /health
+2026-04-19 14:31:40 [INFO    ] maid | chat:2397 | Chat uid=master intent=greeting mode=default
+2026-04-19 14:31:40 [DEBUG   ] maid | _req_log:2353 | HTTP 200 POST /api/chat
+2026-04-19 14:31:44 [DEBUG   ] maid | update_state:705 | State uid=master mood=0.50 att=0.32 session=1 total=29
+2026-04-19 14:31:45 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/live_scene
+2026-04-19 14:31:46 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/live_scene
+2026-04-19 14:31:47 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/live_scene
+2026-04-19 14:31:48 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/live_scene
+2026-04-19 14:31:49 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/live_scene
+2026-04-19 14:31:50 [INFO    ] maid | _build_live_scene_async:1532 | Immersive committed uid=master mode=normal gen=1 in 6.4s
+2026-04-19 14:31:51 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/live_scene
+2026-04-19 14:32:10 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /health
+2026-04-19 14:32:12 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/ltm
+2026-04-19 14:32:15 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/tasks
+2026-04-19 14:32:16 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/reflections
+2026-04-19 14:32:33 [INFO    ] maid | chat:2397 | Chat uid=master intent=question mode=default
+2026-04-19 14:32:33 [DEBUG   ] maid | _req_log:2353 | HTTP 200 POST /api/chat
+2026-04-19 14:32:36 [DEBUG   ] maid | update_state:705 | State uid=master mood=0.56 att=0.34 session=2 total=30
+2026-04-19 14:32:36 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/live_scene
+2026-04-19 14:32:37 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/live_scene
+2026-04-19 14:32:39 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/live_scene
+2026-04-19 14:32:40 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/live_scene
+2026-04-19 14:32:40 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /health
+2026-04-19 14:32:41 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/live_scene
+2026-04-19 14:32:42 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/live_scene
+2026-04-19 14:32:42 [INFO    ] maid | _build_live_scene_async:1532 | Immersive committed uid=master mode=normal gen=2 in 6.7s
+2026-04-19 14:32:46 [DEBUG   ] maid | _req_log:2353 | HTTP 200 GET /api/live_scene
+2026-04-19 14:33:19 [INFO    ] maid | _lifespan:2321 | Digital Human v9.0 stopped
+2026-04-24 20:09:40 [INFO    ] maid | _load_token:126 | App token: 2940df12...
+2026-04-24 20:09:40 [INFO    ] maid | init_db:131 | DB init: C:\Ai\DigitalHuman_v8\memory.db
+2026-04-24 20:09:40 [INFO    ] maid | init_db:159 | DB ready
+2026-04-24 20:09:40 [INFO    ] maid | start_autonomous_loops:380 | Autonomous: proactive loop task scheduled
+2026-04-24 20:09:40 [INFO    ] maid | start_autonomous_loops:386 | Autonomous: diary loop task scheduled
+2026-04-24 20:09:40 [INFO    ] maid | _lifespan:1304 | Digital Human v9.1 started
+2026-04-24 20:09:40 [INFO    ] maid | _proactive_loop:198 | Proactive loop started
+2026-04-24 20:09:40 [INFO    ] maid | _diary_loop:351 | Diary loop started
+2026-04-24 20:09:41 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:09:44 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /
+2026-04-24 20:09:44 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/token
+2026-04-24 20:09:44 [ERROR   ] maid | _log_exc:68 | Request GET /api/status: name '_EMBEDDER_STATE' is not defined
+Traceback (most recent call last):
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\base.py", line 151, in call_next
+    message = await recv_stream.receive()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\anyio\streams\memory.py", line 132, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Ai\DigitalHuman_v8\main.py", line 1358, in _req_log
+    r=await call_next(request)
+      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    raise app_exc
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\base.py", line 182, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+  File "C:\Users\user\AppData\Local\Programs\Python\Python311\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\_utils.py", line 85, in collapse_excgroups
+    raise exc
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\base.py", line 184, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Ai\DigitalHuman_v8\main.py", line 1353, in _security_middleware
+    return await call_next(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    raise app_exc
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\fastapi\routing.py", line 123, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\fastapi\routing.py", line 109, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\fastapi\routing.py", line 389, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\fastapi\routing.py", line 288, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Ai\DigitalHuman_v8\main.py", line 1766, in api_status
+    st = _EMBEDDER_STATE
+         ^^^^^^^^^^^^^^^
+NameError: name '_EMBEDDER_STATE' is not defined
+
+2026-04-24 20:09:44 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /favicon.ico
+2026-04-24 20:09:44 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/users
+2026-04-24 20:09:44 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/users
+2026-04-24 20:09:44 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /memory
+2026-04-24 20:09:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /stats
+2026-04-24 20:09:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/ltm
+2026-04-24 20:09:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/scene_summary
+2026-04-24 20:09:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/rp_scene
+2026-04-24 20:09:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/topics
+2026-04-24 20:09:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /config
+2026-04-24 20:09:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:09:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:09:47 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/proactive/pending
+2026-04-24 20:10:10 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/ltm
+2026-04-24 20:10:11 [INFO    ] maid | get_embedder:152 | Loading embedding model: intfloat/multilingual-e5-large (threads=8) -- first run may download ~1 GB
+2026-04-24 20:10:18 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:10:18 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/tasks
+2026-04-24 20:10:19 [INFO    ] maid | get_embedder:158 | Embedding model ready: dim=1024
+2026-04-24 20:10:20 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/diary/days
+2026-04-24 20:10:23 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/reflections
+2026-04-24 20:10:28 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/diary/days
+2026-04-24 20:10:39 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /config
+2026-04-24 20:10:39 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /favicon.ico
+2026-04-24 20:10:39 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /config
+2026-04-24 20:10:39 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:10:39 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:10:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/proactive/pending
+2026-04-24 20:10:48 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:11:01 [DEBUG   ] maid | _req_log:1360 | HTTP 200 POST /config
+2026-04-24 20:11:03 [DEBUG   ] maid | _req_log:1360 | HTTP 200 POST /config
+2026-04-24 20:11:11 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /config
+2026-04-24 20:11:11 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:11:15 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /favicon.ico
+2026-04-24 20:11:18 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:11:35 [DEBUG   ] maid | _req_log:1360 | HTTP 200 DELETE /api/scene_summary
+2026-04-24 20:11:43 [DEBUG   ] maid | _req_log:1360 | HTTP 200 POST /api/state/reset
+2026-04-24 20:11:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/proactive/pending
+2026-04-24 20:11:50 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:11:50 [DEBUG   ] maid | _req_log:1360 | HTTP 200 POST /api/memory/clear
+2026-04-24 20:12:13 [INFO    ] maid | chat:1404 | Chat uid=master intent=greeting mode=default
+2026-04-24 20:12:13 [DEBUG   ] maid | _req_log:1360 | HTTP 200 POST /api/chat
+2026-04-24 20:12:17 [DEBUG   ] maid | update_state:535 | State uid=master mood=0.50 att=0.32 session=1 total=31
+2026-04-24 20:12:18 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:12:19 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:12:20 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:12:20 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:12:22 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:12:23 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:12:24 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:12:28 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:12:30 [INFO    ] maid | _build_live_scene_async:347 | Immersive committed uid=master mode=normal gen=1 in 12.6s
+2026-04-24 20:12:31 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:12:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/proactive/pending
+2026-04-24 20:12:50 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:13:20 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:13:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/proactive/pending
+2026-04-24 20:13:46 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/ltm
+2026-04-24 20:13:50 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:13:53 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/tasks
+2026-04-24 20:13:55 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/diary/days
+2026-04-24 20:13:59 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/reflections
+2026-04-24 20:14:20 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:14:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/proactive/pending
+2026-04-24 20:14:50 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:14:51 [INFO    ] maid | chat:1404 | Chat uid=master intent=question mode=default
+2026-04-24 20:14:51 [DEBUG   ] maid | _req_log:1360 | HTTP 200 POST /api/chat
+2026-04-24 20:14:53 [DEBUG   ] maid | update_state:535 | State uid=master mood=0.50 att=0.34 session=2 total=32
+2026-04-24 20:14:54 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:14:55 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:14:57 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:14:58 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:14:59 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:15:00 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:15:02 [INFO    ] maid | _build_live_scene_async:347 | Immersive committed uid=master mode=normal gen=2 in 8.4s
+2026-04-24 20:15:04 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:15:20 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:15:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/proactive/pending
+2026-04-24 20:15:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/ltm
+2026-04-24 20:15:48 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/tasks
+2026-04-24 20:15:50 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/diary/days
+2026-04-24 20:15:50 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:15:51 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/reflections
+2026-04-24 20:16:20 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:16:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/proactive/pending
+2026-04-24 20:16:50 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:17:00 [INFO    ] maid | chat:1404 | Chat uid=master intent=other mode=default
+2026-04-24 20:17:00 [DEBUG   ] maid | _req_log:1360 | HTTP 200 POST /api/chat
+2026-04-24 20:17:20 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:17:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/proactive/pending
+2026-04-24 20:17:50 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:18:20 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:18:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/proactive/pending
+2026-04-24 20:18:50 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:19:20 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:19:23 [DEBUG   ] maid | update_state:535 | State uid=master mood=0.50 att=0.36 session=3 total=33
+2026-04-24 20:19:24 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:19:26 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:19:28 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:19:30 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:19:31 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:19:32 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:19:36 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:19:39 [INFO    ] maid | _build_live_scene_async:347 | Immersive committed uid=master mode=normal gen=3 in 16.2s
+2026-04-24 20:19:40 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/live_scene
+2026-04-24 20:19:45 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /api/proactive/pending
+2026-04-24 20:19:51 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:20:22 [DEBUG   ] maid | _req_log:1360 | HTTP 200 GET /health
+2026-04-24 20:20:35 [INFO    ] maid | _lifespan:1328 | Digital Human v9.1 stopped

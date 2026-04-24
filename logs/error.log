@@ -1,0 +1,75 @@
+2026-04-19 13:51:15 [WARNING ] maid | _build_live_scene_async:1504 | Immersive JSON parse failed uid=master len=0
+2026-04-19 13:53:31 [WARNING ] maid | _build_live_scene_async:1504 | Immersive JSON parse failed uid=master len=0
+2026-04-19 14:17:38 [WARNING ] maid | _build_live_scene_async:1517 | Immersive LLM HTTP 400 uid=master mode=normal attempt=1
+2026-04-19 14:17:54 [WARNING ] maid | _build_live_scene_async:1528 | Immersive JSON parse fail uid=master mode=normal attempt=2 len=0 preview=''
+2026-04-24 20:09:44 [ERROR   ] maid | _log_exc:68 | Request GET /api/status: name '_EMBEDDER_STATE' is not defined
+Traceback (most recent call last):
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\base.py", line 151, in call_next
+    message = await recv_stream.receive()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\anyio\streams\memory.py", line 132, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Ai\DigitalHuman_v8\main.py", line 1358, in _req_log
+    r=await call_next(request)
+      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    raise app_exc
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\base.py", line 182, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+  File "C:\Users\user\AppData\Local\Programs\Python\Python311\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\_utils.py", line 85, in collapse_excgroups
+    raise exc
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\base.py", line 184, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Ai\DigitalHuman_v8\main.py", line 1353, in _security_middleware
+    return await call_next(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    raise app_exc
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\fastapi\routing.py", line 123, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\fastapi\routing.py", line 109, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\fastapi\routing.py", line 389, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Ai\DigitalHuman_v8\.venv\Lib\site-packages\fastapi\routing.py", line 288, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Ai\DigitalHuman_v8\main.py", line 1766, in api_status
+    st = _EMBEDDER_STATE
+         ^^^^^^^^^^^^^^^
+NameError: name '_EMBEDDER_STATE' is not defined
+
